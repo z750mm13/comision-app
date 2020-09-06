@@ -19,7 +19,7 @@ class Home extends React.Component {
             <Card item={articles[2]} />
           </Block>
           <Card item={articles[3]} horizontal />
-          <Card item={articles[4]} full />
+          <Card item={articles[3]} full />
         </Block>
       </ScrollView>
     )
