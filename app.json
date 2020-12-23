@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Argon FREE React Native",
+    "name": "Comisión SH",
     "slug": "argon-free-react-native",
     "privacy": "public",
     "sdkVersion": "37.0.0",
@@ -25,6 +25,6 @@
     "ios": {
       "supportsTablet": true
     },
-    "description": "Argon React Native, based on Argon Design System. Coded by Creative Tim"
+    "description": "Aplicación de la comisión de seguridad e higiene del ITSTE"
   }
 }

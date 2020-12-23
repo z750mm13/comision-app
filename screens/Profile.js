@@ -141,7 +141,7 @@ class Profile extends React.Component {
                     <Button
                       small
                       color="transparent"
-                      textStyle={{ color: "#5E72E4", fontSize: 12 }}
+                      textStyle={{ color: "#3490DC", fontSize: 12 }}
                     >
                       View all
                     </Button>
@@ -259,7 +259,7 @@ class Profile extends React.Component {
                 <Button
                   small
                   color="transparent"
-                  textStyle={{ color: "#5E72E4", fontSize: 12 }}
+                  textStyle={{ color: "#3490DC", fontSize: 12 }}
                 >
                   View all
                 </Button>

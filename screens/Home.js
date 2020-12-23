@@ -4,6 +4,8 @@ import { Block, theme } from 'galio-framework';
 
 import { Card } from '../components';
 import articles from '../constants/articles';
+import Perfil from '../constants/Perfil';
+
 const { width } = Dimensions.get('screen');
 
 class Home extends React.Component {
@@ -26,6 +28,7 @@ class Home extends React.Component {
   }
 
   render() {
+    console.log(Perfil.llave);
     return (
       <Block flex center style={styles.home}>
         {this.renderArticles()}

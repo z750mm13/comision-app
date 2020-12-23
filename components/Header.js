@@ -2,6 +2,8 @@ import React from 'react';
 import { withNavigation } from '@react-navigation/compat';
 import { TouchableOpacity, StyleSheet, Platform, Dimensions } from 'react-native';
 import { Button, Block, NavBar, Text, theme } from 'galio-framework';
+import Perfil from '../constants/Perfil';
+import Auth from '../constants/acceso/Auth';
 
 import Icon from './Icon';
 import Input from './Input';
@@ -11,8 +13,21 @@ import argonTheme from '../constants/Theme';
 const { height, width } = Dimensions.get('window');
 const iPhoneX = () => Platform.OS === 'ios' && (height === 812 || width === 812 || height === 896 || width === 896);
 
+const cerrar_sesion = (navigation) => {
+  Auth.logout(Perfil.llave).then(function(response){
+    console.log(response);
+    navigation.navigate('Pro');
+  })
+  .catch(function (error){
+    console.error('salir -> ' + error);
+  })
+}
+
 const BellButton = ({isWhite, style, navigation}) => (
-  <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('Pro')}>
+  <TouchableOpacity
+    style={[styles.button, style]}
+    onPress={() => cerrar_sesion(navigation)}
+  >
     <Icon
       family="ArgonExtra"
       size={16}

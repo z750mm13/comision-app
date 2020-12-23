@@ -5,6 +5,8 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
+import Perfil from '../constants/Perfil';
+
 import { Block } from "galio-framework";
 
 // screens
@@ -27,6 +29,7 @@ const { width } = Dimensions.get("screen");
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
+const token = Perfil.llave;
 
 function ElementsStack(props) {
   return (
@@ -221,7 +224,7 @@ function AppStack(props) {
           fontWeight: "normal"
         }
       }}
-      initialRouteName="Home"
+      initialRouteName={(token === ""? "Account" : "Home")}
     >
       <Drawer.Screen name="Home" component={HomeStack} />
       <Drawer.Screen name="Profile" component={ProfileStack} />

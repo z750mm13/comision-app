@@ -35,25 +35,13 @@
     "react-native-screens": "~2.2.0"
   },
   "devDependencies": {
+    "axios": "^0.21.1",
     "babel-preset-expo": "^8.2.1"
   },
   "keywords": [
-    "argon react native",
-    "argon design system",
-    "argon app react native",
-    "argon iOS",
-    "react native iOS",
-    "creative tim",
-    "argon Android",
-    "react native ui kit",
-    "react native expo",
-    "freebie",
-    "react native argon design",
-    "react native galio",
-    "galio argon free",
-    "galio react native free app",
-    "argon expo react native",
-    "react native ui template"
+    "comision de seguridad e higiene",
+    "comision de seguridad",
+    "comision sh"
   ],
   "author": "Creative Tim <hello@creative-tim.com> (https://www.creative-tim.com/)",
   "license": "MIT",
