@@ -15,7 +15,6 @@ const iPhoneX = () => Platform.OS === 'ios' && (height === 812 || width === 812 
 
 const cerrar_sesion = (navigation) => {
   Auth.logout(Perfil.llave).then(function(response){
-    console.log(response);
     navigation.navigate('Pro');
   })
   .catch(function (error){

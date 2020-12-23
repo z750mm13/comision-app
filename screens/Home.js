@@ -28,7 +28,6 @@ class Home extends React.Component {
   }
 
   render() {
-    console.log(Perfil.llave);
     return (
       <Block flex center style={styles.home}>
         {this.renderArticles()}
