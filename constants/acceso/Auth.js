@@ -1,4 +1,3 @@
-import Perfil from '../Perfil';
 import Server from '../../server/Server';
 
 class Auth {
