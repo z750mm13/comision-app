@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   ImageBackground,
   Image,
@@ -13,9 +13,12 @@ const { height, width } = Dimensions.get("screen");
 import argonTheme from "../constants/Theme";
 import { Images } from "../constants";
 
+import Loader from '../app/services/Loader';
+import Migration from '../app/migrations';
 
 function Onboarding(props) {
     const { navigation } = props;
+    Migration.migrate();
     return (
       <Block flex style={styles.container}>
         <StatusBar hidden />
@@ -51,7 +54,11 @@ function Onboarding(props) {
                 <Button
                   style={styles.button}
                   color={argonTheme.COLORS.SECONDARY}
-                  onPress={() => navigation.navigate("App")}
+                  onPress={() => 
+                    Loader.initApp()
+                      .then((result) => navigation.navigate("App"))
+                      .catch((error) => console.log(error))
+                  }
                   textStyle={{ color: argonTheme.COLORS.BLACK }}
                 >
                   Inicio

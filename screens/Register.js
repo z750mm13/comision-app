@@ -4,7 +4,8 @@ import {
   ImageBackground,
   Dimensions,
   StatusBar,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
+  ActivityIndicator
 } from "react-native";
 
 import { Block, Text } from "galio-framework";
@@ -13,32 +14,77 @@ import { Button, Icon, Input } from "../components";
 import { Images, argonTheme, Login } from "../constants";
 import Auth from '../constants/acceso/Auth';
 import Perfil from '../constants/Perfil';
+import UserController from '../app/controllers/UserController';
 const { width, height } = Dimensions.get("screen");
 
-function Register(props) {
+function Register(props) {  
+  const { navigation } = props;
+
     const initalState = {
       email: "",
       password: "",
+      error: 0,
+      cargando: false
     };
+
     const [state, setState] = useState(initalState);
     const handleChangeText = (value, name) => {
       setState({ ...state, [name]: value });
     };
     
     const iniciar_sesion = () => {
-      //"coordinacion.itste.csh@gmail.com"
-      //"holamundo123"
+      if(state.cargando || Perfil.llave !== "") return;
+      console.log("Iniciando sesión");
+      if(state.email === "" | state.password === ""){
+        console.log("Error interno");
+        handleChangeText(422,"error");
+        return;
+      }
+      handleChangeText(true, "cargando");
       Auth.login(state.email, state.password)
         .then(function(response){
           Perfil.llave = response.data.access_token;
-          navigation.navigate("Home");
+          console.log("Sesión iniciada");
+          UserController.load()
+            .then(function(respuesta){
+              handleChangeText(false, "cargando");
+              navigation.navigate("Home");
+            })
         })
         .catch(function (error) {
-          console.error("hola " + error);
+          console.log("Error externo");
+          handleChangeText(false, "cargando");
+          if(error.response){
+            handleChangeText(error.response.status,"error");
+            console.log(error.response.status);
+          } else if (error.request) {
+            handleChangeText(404,"error");
+            console.log(error.request);
+          } else {
+            handleChangeText(1,"error");
+            console.log("Se desconoce el error");
+          }
         });
     };
-    
-    const { navigation } = props;
+
+    const error = () => {
+      if(state.error === 422)
+      return (
+        <Text color={argonTheme.COLORS.ERROR}>Error en los datos</Text>
+      );
+      else if(state.error === 404)
+      return (
+        <Text color={argonTheme.COLORS.ERROR}>Error en la conexión</Text>
+      )
+      else if(state.error === 1){
+        return (
+          <Text color={argonTheme.COLORS.ERROR}>No se conce el error</Text>
+        )
+      }
+      else return (
+        <Text></Text>
+      )
+    }
 
     return (
       <Block flex middle>
@@ -102,8 +148,9 @@ function Register(props) {
                           borderWidth: 3
                         }}
                         color={argonTheme.COLORS.BLACK}
-                      >I agree with </Text>
+                      >Ir a </Text>
                       <Button
+                        disabled={state.cargando}
                         style={{ width: 100 }}
                         color="transparent"
                         textStyle={{
@@ -111,18 +158,22 @@ function Register(props) {
                           fontSize: 14
                         }}
                       >
-                        Privacy Policy
+                        Comisión SH
                       </Button>
                     </Block>
+                    <Block middle>{error()}</Block>
                     <Block middle>
                       <Button
+                        disabled={state.cargando}
                         color="primary"
                         style={styles.createButton}
                         onPress={()=>iniciar_sesion()}
                       >
-                        <Text bold size={14} color={argonTheme.COLORS.WHITE}>
-                          INICIAR SESIÓN
-                        </Text>
+                        {
+                          state.cargando?
+                          (<ActivityIndicator />):
+                          (<Text bold size={14} color={argonTheme.COLORS.WHITE}>INICIAR SESIÓN</Text>)
+                        }
                       </Button>
                     </Block>
                   </KeyboardAvoidingView>
@@ -187,5 +238,4 @@ const styles = StyleSheet.create({
     marginTop: 25
   }
 });
-
 export default Register;

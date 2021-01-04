@@ -29,7 +29,6 @@ const { width } = Dimensions.get("screen");
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
-const token = Perfil.llave;
 
 function ElementsStack(props) {
   return (
@@ -149,9 +148,9 @@ function HomeStack(props) {
         options={{
           header: ({ navigation, scene }) => (
             <Header
-              title="Home"
+              title="Inicio"
+              tabs={tabs.categories}
               search
-              options
               navigation={navigation}
               scene={scene}
             />
@@ -224,7 +223,7 @@ function AppStack(props) {
           fontWeight: "normal"
         }
       }}
-      initialRouteName={(token === ""? "Account" : "Home")}
+      initialRouteName={ventana(Perfil.llave)}
     >
       <Drawer.Screen name="Home" component={HomeStack} />
       <Drawer.Screen name="Profile" component={ProfileStack} />
@@ -234,4 +233,6 @@ function AppStack(props) {
     </Drawer.Navigator>
   );
 }
-
+function ventana( key ) {
+  return (key === ""? "Account" : "Home");
+}

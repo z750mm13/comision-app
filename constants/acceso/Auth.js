@@ -10,7 +10,7 @@ class Auth {
     }
   )
 
-  static logout = (token) => Server.getRequest(
+  static logout = async (token) => Server.getRequest(
     'auth/logout',
     {Authorization: 'Bearer ' + token}
   )
