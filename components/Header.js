@@ -2,8 +2,7 @@ import React from 'react';
 import { withNavigation } from '@react-navigation/compat';
 import { TouchableOpacity, StyleSheet, Platform, Dimensions, Alert } from 'react-native';
 import { Button, Block, NavBar, Text, theme } from 'galio-framework';
-import Perfil from '../constants/Perfil';
-import Auth from '../constants/acceso/Auth';
+import UserController from '../app/controllers/UserController';
 
 import Icon from './Icon';
 import Input from './Input';
@@ -21,12 +20,15 @@ const confirma_cerrar_sesion = ( navigation ) => {
 }
 
 function cerrar_sesion( navigation ) {
-  Auth.logout(Perfil.llave).then(function(response){
-    Perfil.limpiar();
+  navigation.setParams({ process: "si" });
+  UserController.clearData().then(function(response){
+    navigation.setParams({ process: "no" })
+    console.log("Cesion cerrada exitosamente!");
     navigation.navigate('Onboarding');
   })
   .catch(function (error){
-    console.error('salir -> ' + error);
+    navigation.setParams({ process: "no" })
+    console.log('salir -> ' + error);
   })
 }
 

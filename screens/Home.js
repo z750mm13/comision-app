@@ -3,19 +3,36 @@ import { StyleSheet, Dimensions, ScrollView, Text } from 'react-native';
 import { Block, theme } from 'galio-framework';
 
 import { Card } from '../components';
+import ProgressDialog from 'react-native-progress-dialog';
 import articles from '../constants/articles';
-
 const { width } = Dimensions.get('screen');
 
+const estado = {
+  cargando: false,
+  idTab: ''
+};
+
+renderProcessLoader = (params) => {
+  if(params && params.process)
+    estado.cargando = (params.process==="si");
+  let proceso = estado.cargando;
+  return (proceso?
+    (<ProgressDialog visible label="Cargando..."/>):
+    null
+  )
+}
+
 renderArticles = (params) => {
-  if(params)
-  console.log("Renderezando " + params.tabId);
-  else return null;
+  if(params && params.tabId) {
+    estado.idTab = params.tabId
+    console.log("Renderezando " + params.tabId);
+  }
+  let tab = estado.idTab;
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.articles}>
-      {renderArticle(params.tabId)}
+      {renderArticle(tab)}
     </ScrollView>
   )
 }
@@ -43,14 +60,10 @@ function renderArticle( id ) {
 
 function Home (props) {
   const { route } = props;
-  const initalState = {
-    load: false
-  };
-  
-  const [state, setState] = useState(initalState);
   
   return (
     <Block flex center style={styles.home}>
+      {renderProcessLoader(route.params)}
       {renderArticles(route.params)}
     </Block>
   );

@@ -22,14 +22,12 @@ class Loader {
             console.log("El perfil contiene inconsistencias y se limpio -> " + limpiado);
             resolve(true);
           })
+        } else {
+          resolve(true);
         }
       });
       else resolve(true)
     });
-  }
-
-  logged() {
-    //
   }
 }
 

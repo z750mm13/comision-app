@@ -1,8 +1,13 @@
 import ApiUserController from './ApiUserController';
+import Auth from '../../constants/acceso/Auth';
 import User from '../models/user';
 import Perfil from '../../constants/Perfil';
 
-class UserController{
+class UserController {
+  static clearing = false;
+  /**
+   * Carga de datos de la api al storage local
+   */
   static load() {
     return new Promise((resolve,reject) =>{
       ApiUserController.load(Perfil.llave)
@@ -21,6 +26,18 @@ class UserController{
           console.log("Api Error:");
           console.log(error);
         });
+    });
+  }
+  static clearData() {
+    return new Promise((resolve,reject) => {
+      Auth.logout(Perfil.llave).then(function(response){
+        User.clear()
+          .then((cleared) => {
+            Perfil.limpiar();
+            resolve(true);
+          })
+          .catch((error) => reject(error))
+      }).catch((error) => reject(error))
     });
   }
 }
