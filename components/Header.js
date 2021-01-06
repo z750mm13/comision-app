@@ -3,6 +3,7 @@ import { withNavigation } from '@react-navigation/compat';
 import { TouchableOpacity, StyleSheet, Platform, Dimensions, Alert } from 'react-native';
 import { Button, Block, NavBar, Text, theme } from 'galio-framework';
 import UserController from '../app/controllers/UserController';
+import ResourceController from '../app/controllers/ResourceController';
 
 import Icon from './Icon';
 import Input from './Input';
@@ -23,12 +24,14 @@ function cerrar_sesion( navigation ) {
   navigation.setParams({ process: "si" });
   UserController.clearData().then(function(response){
     navigation.setParams({ process: "no" })
-    console.log("Cesion cerrada exitosamente!");
-    navigation.navigate('Onboarding');
+    ResourceController.clearData().then(()=>{
+      console.log("Cesion cerrada exitosamente!");
+      navigation.navigate('Onboarding');
+    })
   })
   .catch(function (error){
     navigation.setParams({ process: "no" })
-    console.log('salir -> ' + error);
+    console.log('Cierre de sesion -> ' + error);
   })
 }
 

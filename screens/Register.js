@@ -15,6 +15,8 @@ import { Images, argonTheme, Login } from "../constants";
 import Auth from '../constants/acceso/Auth';
 import Perfil from '../constants/Perfil';
 import UserController from '../app/controllers/UserController';
+import ResourceController from '../app/controllers/ResourceController';
+
 const { width, height } = Dimensions.get("screen");
 
 function Register(props) {  
@@ -24,7 +26,8 @@ function Register(props) {
       email: "",
       password: "",
       error: 0,
-      cargando: false
+      cargando: false,
+      accion: ""
     };
 
     const [state, setState] = useState(initalState);
@@ -46,14 +49,18 @@ function Register(props) {
           Perfil.llave = response.data.access_token;
           console.log("Sesión iniciada");
           UserController.load()
-            .then(function(respuesta){
-              handleChangeText(false, "cargando");
-              navigation.navigate("Home");
+            .then(function(respuesta) {
+              ResourceController.load()
+                .then(function(salida) {
+                  handleChangeText(false, "cargando");
+                  navigation.navigate("Home");
+                })
             })
         })
         .catch(function (error) {
           console.log("Error externo");
           handleChangeText(false, "cargando");
+          handleChangeText("","accion");
           if(error.response){
             handleChangeText(error.response.status,"error");
             console.log(error.response.status);
@@ -79,6 +86,11 @@ function Register(props) {
       else if(state.error === 1){
         return (
           <Text color={argonTheme.COLORS.ERROR}>No se conce el error</Text>
+        )
+      }
+      else if(state.error === 2){
+        return (
+          <Text color={argonTheme.COLORS.PRIMARY}>{state.accion}</Text>
         )
       }
       else return (

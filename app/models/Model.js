@@ -21,6 +21,7 @@ const db = SQLite.openDatabase("db.db", "1.0", "Main Database", 200000, openCB, 
 const type = "Model";
 
 class Model {
+  #autoincrement = true;
   #types = [];
   #colums = [];
   #name = "";
@@ -34,7 +35,7 @@ class Model {
     return this.#migrate;
   }
 
-  constructor ( obj, name ){
+  constructor( obj, name ) {
     this.#name = name;
     this.initColums( obj );
     this.initTypes( obj );
@@ -77,10 +78,16 @@ class Model {
   }
 
   migrate() {
+    console.log('create table if not exists ' + this.#name + ' (id integer primary key' + (this.#autoincrement?' autoincrement':'') + this.makeColums() + ');');
     db.exec([{
-      sql: 'create table if not exists ' + this.#name + ' (id integer primary key autoincrement' + this.makeColums() + ');',
+      sql: 'create table if not exists ' + this.#name + ' (id integer primary key' + (this.#autoincrement?' autoincrement':'') + this.makeColums() + ');',
       args: []
      }], false, () => console.log(this.#name + " successful migrate."));
+  }
+
+  setAutoincrement(autoincrement) {
+    this.#autoincrement = autoincrement;
+    return autoincrement;
   }
 
   get() {
@@ -99,7 +106,7 @@ class Model {
     return new Promise((resolve, reject) => {
       let name = this.#name;
       db.transaction((tx) => {
-        tx.executeSql('insert into ' + name + ' (' + this.getColums() + ') values (' + this.getValues() + ');', data,
+        tx.executeSql('insert into ' + name + ' (' + (this.#autoincrement?'':'id,') + this.getColums() + ') values (' + (this.#autoincrement?'':'?,') + this.getValues() + ');', data,
         () => {
           resolve(true);
         },errorCB);

@@ -16,6 +16,7 @@ import { Images } from "../constants";
 import Loader from '../app/services/Loader';
 import Migration from '../app/migrations';
 
+
 function Onboarding(props) {
     const { navigation } = props;
     Migration.migrate();

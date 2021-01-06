@@ -6,10 +6,7 @@ const { width } = Dimensions.get('screen');
 import argonTheme from '../constants/Theme';
 
 const defaultMenu = [
-  { id: 'popular', title: 'Popular', },
-  { id: 'beauty', title: 'Beauty', },
-  { id: 'cars', title: 'Cars', },
-  { id: 'motocycles', title: 'Motocycles', },
+  { id: '1', title: 'Todo'},
 ];
 
 export default class Tabs extends React.Component {

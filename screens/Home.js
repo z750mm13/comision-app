@@ -9,7 +9,8 @@ const { width } = Dimensions.get('screen');
 
 const estado = {
   cargando: false,
-  idTab: ''
+  idTab: '',
+  subareas:[]
 };
 
 renderProcessLoader = (params) => {
@@ -25,7 +26,7 @@ renderProcessLoader = (params) => {
 renderArticles = (params) => {
   if(params && params.tabId) {
     estado.idTab = params.tabId
-    console.log("Renderezando " + params.tabId);
+    console.log("Renderizando " + params.tabId);
   }
   let tab = estado.idTab;
   return (
@@ -38,7 +39,7 @@ renderArticles = (params) => {
 }
 
 function renderArticle( id ) {
-  if(id === "popular")
+  if(id === "1")
   return(
   <Block flex>
     <Card item={articles[0]} horizontal  />
@@ -48,7 +49,7 @@ function renderArticle( id ) {
     </Block>
   </Block>
   )
-  else if(id === "beauty")
+  else if(id === "2")
   return (
     <Block flex>
     <Card item={articles[3]} horizontal />

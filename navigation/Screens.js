@@ -22,7 +22,8 @@ import CustomDrawerContent from "./Menu";
 
 // header for screens
 import { Icon, Header } from "../components";
-import { argonTheme, tabs } from "../constants";
+//import { argonTheme, tabs } from "../constants";
+import Areas from '../constants/Areas';
 
 const { width } = Dimensions.get("screen");
 
@@ -149,7 +150,7 @@ function HomeStack(props) {
           header: ({ navigation, scene }) => (
             <Header
               title="Inicio"
-              tabs={tabs.categories}
+              tabs={Areas.areas}
               search
               navigation={navigation}
               scene={scene}

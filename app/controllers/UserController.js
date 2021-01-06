@@ -9,7 +9,7 @@ class UserController {
    * Carga de datos de la api al storage local
    */
   static load() {
-    return new Promise((resolve,reject) =>{
+    return new Promise((resolve,reject) => {
       ApiUserController.load(Perfil.llave)
         .then(function (response) {
           Perfil.nombre = response.data.nombre;
@@ -20,11 +20,11 @@ class UserController {
               resolve(true);
             }).catch(function (error){
               console.log("SQL Error:");
-              console.log(error);
+              reject(error);
             });
         }).catch(function (error){
           console.log("Api Error:");
-          console.log(error);
+          reject.log(error);
         });
     });
   }
