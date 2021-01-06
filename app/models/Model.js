@@ -78,7 +78,6 @@ class Model {
   }
 
   migrate() {
-    console.log('create table if not exists ' + this.#name + ' (id integer primary key' + (this.#autoincrement?' autoincrement':'') + this.makeColums() + ');');
     db.exec([{
       sql: 'create table if not exists ' + this.#name + ' (id integer primary key' + (this.#autoincrement?' autoincrement':'') + this.makeColums() + ');',
       args: []
