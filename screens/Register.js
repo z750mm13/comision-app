@@ -52,6 +52,7 @@ function Register(props) {
             .then(function(respuesta) {
               ResourceController.load()
                 .then(function(salida) {
+                  //Carga de subáreas
                   handleChangeText(false, "cargando");
                   navigation.navigate("Home");
                 })

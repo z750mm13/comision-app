@@ -20,6 +20,17 @@ class Question {
     return Question.question.add(data);
   }
 
+  static addMany(questions) {
+    let length = questions.length;
+    let _array = [];
+    questions.forEach(question => {
+      _array.push(question.id);
+      _array.push(question.encabezado);
+      _array.push(question.questionnaire_id);
+    });
+    return Question.question.addMany({length:length,_array:_array});
+  }
+
   static get() {
     return Question.question.get();
   }

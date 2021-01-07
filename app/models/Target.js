@@ -20,6 +20,17 @@ class Target {
     return Target.target.add(data);
   }
 
+  static addMany(targets) {
+    let length = targets.length;
+    let _array = [];
+    targets.forEach(target => {
+      _array.push(target.id);
+      _array.push(target.subarea_id);
+      _array.push(target.questionnaire_id);
+    });
+    return Target.target.addMany({length:length,_array:_array});
+  }
+
   static get() {
     return Target.target.get();
   }

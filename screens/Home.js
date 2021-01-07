@@ -4,7 +4,9 @@ import { Block, theme } from 'galio-framework';
 
 import { Card } from '../components';
 import ProgressDialog from 'react-native-progress-dialog';
-import articles from '../constants/articles';
+
+import Subareas from '../app/vars/Subareas';
+
 const { width } = Dimensions.get('screen');
 
 const estado = {
@@ -27,36 +29,26 @@ renderArticles = (params) => {
   if(params && params.tabId) {
     estado.idTab = params.tabId
     console.log("Renderizando " + params.tabId);
+    let tab = estado.idTab;
+    return (
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.articles}>
+        {renderArticle(tab)}
+      </ScrollView>
+    )
   }
-  let tab = estado.idTab;
-  return (
-    <ScrollView
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={styles.articles}>
-      {renderArticle(tab)}
-    </ScrollView>
-  )
 }
 
 function renderArticle( id ) {
-  if(id === "1")
+  if(Subareas.subareas[id] === undefined) return null;
   return(
   <Block flex>
-    <Card item={articles[0]} horizontal  />
-    <Block flex row>
-      <Card item={articles[1]} style={{ marginRight: theme.SIZES.BASE }} />
-      <Card item={articles[2]} />
-    </Block>
+    {Subareas.subareas[id].map((prop) => {
+      return (<Card item={prop} horizontal  />);
+    })}
   </Block>
   )
-  else if(id === "2")
-  return (
-    <Block flex>
-    <Card item={articles[3]} horizontal />
-    <Card item={articles[4]} full />
-    </Block>
-  )
-  else return null;
 }
 
 function Home (props) {

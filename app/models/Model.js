@@ -89,6 +89,22 @@ class Model {
     return autoincrement;
   }
 
+  joins(joins) {
+    if(joins === null) return '';
+    let salida = '';
+    joins.forEach(join => {
+      salida += join.type + " " + join.table+ " on (" + join.left + " = " + join.right + ") ";
+    });
+    return salida;
+  }
+
+  values( values ) {
+    if(values <= 0) return '';
+    let salida = ' values';
+    for (let i = 0; i < values; i++) salida += ' (' + (this.#autoincrement?'':'?,') + this.getValues() + ')' + (i === (values - 1)? "" : ",");
+    return salida;
+  }
+
   get() {
     return new Promise((resolve, reject) => {
       let name = this.#name;
@@ -110,7 +126,20 @@ class Model {
           resolve(true);
         },errorCB);
       });
-    })
+    });
+  }
+
+  addMany(data) {
+    return new Promise((resolve, reject) => {
+      db.transaction((tx) => {
+        tx.executeSql(
+          'insert into ' + this.#name + ' (' + (this.#autoincrement?'':'id,') + this.getColums() + ')'+
+          this.values(data.length), data._array,
+        () => {
+          resolve(true);
+        },errorCB);
+      });
+    });
   }
 
   clear() {
@@ -123,6 +152,19 @@ class Model {
         },errorCB);
       });
     })
+  }
+
+  getWith(structure) {
+    return new Promise ((resolve, reject) => {
+      db.transaction((tx) => {//custom select
+        tx.executeSql(
+          'select ' + (structure.rows?? "*") + ' from ' + this.#name + ' ' +
+          this.joins(structure.joins) +
+          (structure.where?'where '+structure.where:''), [],
+          (tx, results) => resolve(results.rows)
+        ,errorCB);
+      });
+    });
   }
 
   db() {

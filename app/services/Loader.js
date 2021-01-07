@@ -1,9 +1,11 @@
 import User from '../models/user';
 import Validity from '../models/Validity';
 import Area from '../models/Area';
+
 import Perfil from '../../constants/Perfil';
 import Rango from '../../constants/Rango';
 import Areas from '../../constants/Areas';
+import Subareas from '../vars/Subareas';
 
 class Loader {
 
@@ -31,7 +33,23 @@ class Loader {
                 console.log("No existe registro de rango.");
               }
               Area.get().then((areas) => {
-                areas._array.forEach(area => Areas.areas.push({id:area.id + "", title:area.nombre}));
+                areas._array.forEach(area => {
+                  Areas.areas.push({id:area.id + "", title:area.nombre});
+                  Area.subareas(area.id).then((subareasSQL) => {
+                    let data = [];
+                    let area_id = "";
+                    subareasSQL._array.forEach(subarea => {
+                      data.push({
+                        id: subarea.id,
+                        title: subarea.nombre,
+                        image: 'https://images.unsplash.com/photo-1516559828984-fb3b99548b21?ixlib=rb-1.2.1&auto=format&fit=crop&w=2100&q=80',
+                        cta: 'Realizar evaluación'
+                      });
+                      area_id = subarea.area_id;
+                    });
+                    Subareas.subareas[area_id] = data;
+                  });
+                });
                 console.log("Se han cargado las " + areas.length + " areas.");
                 resolve(true);
               });
