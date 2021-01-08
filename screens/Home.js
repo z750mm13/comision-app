@@ -1,5 +1,8 @@
 import React, {useState} from 'react';
 import { StyleSheet, Dimensions, ScrollView, Text } from 'react-native';
+
+import { Camera } from 'expo-camera';
+
 import { Block, theme } from 'galio-framework';
 
 import { Card } from '../components';
