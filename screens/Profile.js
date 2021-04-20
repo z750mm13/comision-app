@@ -128,15 +128,20 @@ class Profile extends React.Component {
                   </Block>
                   <Block
                     row
-                    space="between"
+                    style={{ paddingVertical: 14, alignItems: "baseline" }}
                   >
-                    <Text bold size={16} color="#525F7F" style={{marginTop: 12}}>
+                    <Text bold size={16} color="#525F7F">
                       Album
                     </Text>
+                  </Block>
+                  <Block
+                    row
+                    style={{ paddingBottom: 20, justifyContent: "flex-end" }}
+                  >
                     <Button
                       small
                       color="transparent"
-                      textStyle={{ color: "#5E72E4", fontSize: 12, marginLeft: 24 }}
+                      textStyle={{ color: "#3490DC", fontSize: 12 }}
                     >
                       View all
                     </Button>
@@ -254,7 +259,7 @@ class Profile extends React.Component {
                 <Button
                   small
                   color="transparent"
-                  textStyle={{ color: "#5E72E4", fontSize: 12 }}
+                  textStyle={{ color: "#3490DC", fontSize: 12 }}
                 >
                   View all
                 </Button>

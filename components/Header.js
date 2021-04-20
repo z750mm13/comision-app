@@ -1,7 +1,9 @@
 import React from 'react';
 import { withNavigation } from '@react-navigation/compat';
-import { TouchableOpacity, StyleSheet, Platform, Dimensions } from 'react-native';
+import { TouchableOpacity, StyleSheet, Platform, Dimensions, Alert } from 'react-native';
 import { Button, Block, NavBar, Text, theme } from 'galio-framework';
+import UserController from '../app/controllers/UserController';
+import ResourceController from '../app/controllers/ResourceController';
 
 import Icon from './Icon';
 import Input from './Input';
@@ -11,17 +13,43 @@ import argonTheme from '../constants/Theme';
 const { height, width } = Dimensions.get('window');
 const iPhoneX = () => Platform.OS === 'ios' && (height === 812 || width === 812 || height === 896 || width === 896);
 
-const BellButton = ({isWhite, style, navigation}) => (
-  <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('Pro')}>
+const confirma_cerrar_sesion = ( navigation ) => {
+  Alert.alert('Cerrar Sesión', 'Si no ha guardado sus cambios estos se perderán. ¿Desea cerrar su sesión?',[
+    {text:'Si', onPress: () => cerrar_sesion(navigation)},
+    {text:'No', onPress: () => console.log('Sin cerrar sesión')}
+  ])
+}
+
+function cerrar_sesion( navigation ) {
+  navigation.setParams({ process: "si" });
+  UserController.clearData().then(function(response){
+    navigation.setParams({ process: "no" })
+    ResourceController.clearData().then(()=>{
+      console.log("Cesion cerrada exitosamente!");
+      navigation.navigate('Onboarding');
+    })
+  })
+  .catch(function (error){
+    navigation.setParams({ process: "no" })
+    console.log('Cierre de sesion -> ' + error);
+  })
+}
+
+const EngineButton = ({isWhite, style, navigation}) => (
+  <TouchableOpacity
+    style={[styles.button, style]}
+    onPress={() => confirma_cerrar_sesion(navigation)}
+  >
     <Icon
       family="ArgonExtra"
       size={16}
-      name="bell"
+      name="engine-start"
       color={argonTheme.COLORS[isWhite ? 'WHITE' : 'ICON']}
     />
-    <Block middle style={styles.notify} />
+    
   </TouchableOpacity>
 );
+// <Block middle style={styles.notify} />
 
 const BasketButton = ({isWhite, style, navigation}) => (
   <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('Pro')}>
@@ -55,36 +83,36 @@ class Header extends React.Component {
 
     if (title === 'Title') {
       return [
-        <BellButton key='chat-title' navigation={navigation} isWhite={white} />,
-        <BasketButton key='basket-title' navigation={navigation} isWhite={white} />
+        <BasketButton key='basket-title' navigation={navigation} isWhite={white} />,
+        <EngineButton key='chat-title' navigation={navigation} isWhite={white} />
       ]
     }
 
     switch (title) {
-      case 'Home':
+      case 'Inicio':
         return ([
-          <BellButton key='chat-home' navigation={navigation} isWhite={white} />,
-          <BasketButton key='basket-home' navigation={navigation} isWhite={white} />
+          <BasketButton key='basket-home' navigation={navigation} isWhite={white} />,
+          <EngineButton key='chat-home' navigation={navigation} isWhite={white} />
         ]);
       case 'Deals':
         return ([
-          <BellButton key='chat-categories' navigation={navigation} />,
-          <BasketButton key='basket-categories' navigation={navigation} />
+          <BasketButton key='basket-categories' navigation={navigation} />,
+          <EngineButton key='chat-categories' navigation={navigation} />
         ]);
       case 'Categories':
         return ([
-          <BellButton key='chat-categories' navigation={navigation} isWhite={white} />,
-          <BasketButton key='basket-categories' navigation={navigation} isWhite={white} />
+          <BasketButton key='basket-categories' navigation={navigation} isWhite={white} />,
+          <EngineButton key='chat-categories' navigation={navigation} isWhite={white} />
         ]);
       case 'Category':
         return ([
-          <BellButton key='chat-deals' navigation={navigation} isWhite={white} />,
-          <BasketButton key='basket-deals' navigation={navigation} isWhite={white} />
+          <BasketButton key='basket-deals' navigation={navigation} isWhite={white} />,
+          <EngineButton key='chat-deals' navigation={navigation} isWhite={white} />
         ]);
       case 'Profile':
         return ([
-          <BellButton key='chat-profile' navigation={navigation} isWhite={white} />,
-          <BasketButton key='basket-deals' navigation={navigation} isWhite={white} />
+          <BasketButton key='basket-deals' navigation={navigation} isWhite={white} />,
+          <EngineButton key='chat-profile' navigation={navigation} isWhite={white} />
         ]);
       case 'Product':
         return ([
@@ -93,13 +121,13 @@ class Header extends React.Component {
         ]);
       case 'Search':
         return ([
-          <BellButton key='chat-search' navigation={navigation} isWhite={white} />,
-          <BasketButton key='basket-search' navigation={navigation} isWhite={white} />
+          <BasketButton key='basket-search' navigation={navigation} isWhite={white} />,
+          <EngineButton key='chat-search' navigation={navigation} isWhite={white} />
         ]);
       case 'Settings':
         return ([
-          <BellButton key='chat-search' navigation={navigation} isWhite={white} />,
-          <BasketButton key='basket-search' navigation={navigation} isWhite={white} />
+          <BasketButton key='basket-search' navigation={navigation} isWhite={white} />,
+          <EngineButton key='chat-search' navigation={navigation} isWhite={white} />,
         ]);
       default:
         break;
@@ -114,7 +142,7 @@ class Header extends React.Component {
         style={styles.search}
         placeholder="What are you looking for?"
         placeholderTextColor={'#8898AA'}
-        onFocus={() => navigation.navigate('Pro')}
+        //onFocus={() => navigation.navigate('Pro')}
         iconContent={<Icon size={16} color={theme.COLORS.MUTED} name="search-zoom-in" family="ArgonExtra" />}
       />
     );
@@ -149,7 +177,9 @@ class Header extends React.Component {
       <Tabs
         data={tabs || []}
         initialIndex={tabIndex || defaultTab}
-        onChange={id => navigation.setParams({ tabId: id })} />
+        onChange={id => {
+          navigation.setParams({ tabId: id })}
+        } />
     )
   }
   renderHeader = () => {

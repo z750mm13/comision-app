@@ -1,37 +1,69 @@
-import React from 'react';
-import { StyleSheet, Dimensions, ScrollView } from 'react-native';
+import React, {useState} from 'react';
+import { StyleSheet, Dimensions, ScrollView, Text } from 'react-native';
+
 import { Block, theme } from 'galio-framework';
 
 import { Card } from '../components';
-import articles from '../constants/articles';
+import ProgressDialog from 'react-native-progress-dialog';
+
+import Subareas from '../app/vars/Subareas';
+import QuestionnaireController from '../app/controllers/QuestionnaireController';
+
 const { width } = Dimensions.get('screen');
 
-class Home extends React.Component {
-  renderArticles = () => {
+const estado = {
+  cargando: false,
+  idTab: '',
+  subareas:[]
+};
+
+renderProcessLoader = (params) => {
+  if(params && params.process)
+    estado.cargando = (params.process==="si");
+  let proceso = estado.cargando;
+  return (proceso?
+    (<ProgressDialog visible label="Cargando..."/>):
+    null
+  )
+}
+
+renderArticles = (params) => {
+  if(params && params.tabId) {
+    estado.idTab = params.tabId
+    console.log("Renderizando " + params.tabId);
+    let tab = estado.idTab;
     return (
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.articles}>
-        <Block flex>
-          <Card item={articles[0]} horizontal  />
-          <Block flex row>
-            <Card item={articles[1]} style={{ marginRight: theme.SIZES.BASE }} />
-            <Card item={articles[2]} />
-          </Block>
-          <Card item={articles[3]} horizontal />
-          <Card item={articles[4]} full />
-        </Block>
+        {renderArticle(tab)}
       </ScrollView>
     )
   }
+}
 
-  render() {
-    return (
-      <Block flex center style={styles.home}>
-        {this.renderArticles()}
-      </Block>
-    );
-  }
+function renderArticle( id ) {
+  if(Subareas.subareas[id] === undefined) return null;
+  return(
+  <Block flex>
+    {Subareas.subareas[id].map((prop) => {
+      return (<Card item={prop} horizontal loader={
+        {screen:'Cuestionario',method:QuestionnaireController}
+      }/>);
+    })}
+  </Block>
+  )
+}
+
+function Home (props) {
+  const { route } = props;
+  
+  return (
+    <Block flex center style={styles.home}>
+      {renderProcessLoader(route.params)}
+      {renderArticles(route.params)}
+    </Block>
+  );
 }
 
 const styles = StyleSheet.create({

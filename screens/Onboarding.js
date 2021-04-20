@@ -11,12 +11,15 @@ import { Block, Button, Text, theme } from "galio-framework";
 const { height, width } = Dimensions.get("screen");
 
 import argonTheme from "../constants/Theme";
-import Images from "../constants/Images";
+import { Images } from "../constants";
 
-class Onboarding extends React.Component {
-  render() {
-    const { navigation } = this.props;
+import Loader from '../app/services/Loader';
+import Migration from '../app/migrations';
 
+
+function Onboarding(props) {
+    const { navigation } = props;
+    Migration.migrate();
     return (
       <Block flex style={styles.container}>
         <StatusBar hidden />
@@ -34,17 +37,17 @@ class Onboarding extends React.Component {
               <Block style={styles.title}>
                 <Block>
                   <Text color="white" size={60}>
-                    Design
+                    Comisión
                   </Text>
                 </Block>
                 <Block>
                   <Text color="white" size={60}>
-                    System
+                    SH
                   </Text>
                 </Block>
                 <Block style={styles.subTitle}>
                   <Text color="white" size={16}>
-                    Fully coded React Native components.
+                    Aplicación de la CSH del ITSTE.
                   </Text>
                 </Block>
               </Block>
@@ -52,17 +55,20 @@ class Onboarding extends React.Component {
                 <Button
                   style={styles.button}
                   color={argonTheme.COLORS.SECONDARY}
-                  onPress={() => navigation.navigate("App")}
+                  onPress={() => 
+                    Loader.initApp()
+                      .then((result) => navigation.navigate("App"))
+                      .catch((error) => console.log(error))
+                  }
                   textStyle={{ color: argonTheme.COLORS.BLACK }}
                 >
-                  Get Started
+                  Inicio
                 </Button>
               </Block>
           </Block>
         </Block>
       </Block>
     );
-  }
 }
 
 const styles = StyleSheet.create({

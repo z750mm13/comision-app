@@ -1,20 +1,104 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   ImageBackground,
   Dimensions,
   StatusBar,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
+  ActivityIndicator
 } from "react-native";
-import { Block, Checkbox, Text, theme } from "galio-framework";
+
+import { Block, Text } from "galio-framework";
 
 import { Button, Icon, Input } from "../components";
-import { Images, argonTheme } from "../constants";
+import { Images, argonTheme, Login } from "../constants";
+import Auth from '../constants/acceso/Auth';
+import Perfil from '../constants/Perfil';
+import UserController from '../app/controllers/UserController';
+import ResourceController from '../app/controllers/ResourceController';
 
 const { width, height } = Dimensions.get("screen");
 
-class Register extends React.Component {
-  render() {
+function Register(props) {  
+  const { navigation } = props;
+
+    const initalState = {
+      email: "",
+      password: "",
+      error: 0,
+      cargando: false,
+      accion: ""
+    };
+
+    const [state, setState] = useState(initalState);
+    const handleChangeText = (value, name) => {
+      setState({ ...state, [name]: value });
+    };
+    
+    const iniciar_sesion = () => {
+      if(state.cargando || Perfil.llave !== "") return;
+      console.log("Iniciando sesión");
+      if(state.email === "" | state.password === ""){
+        console.log("Error interno");
+        handleChangeText(422,"error");
+        return;
+      }
+      handleChangeText(true, "cargando");
+      Auth.login(state.email, state.password)
+        .then(function(response){
+          Perfil.llave = response.data.access_token;
+          console.log("Sesión iniciada");
+          UserController.load()
+            .then(function(respuesta) {
+              ResourceController.load()
+                .then(function(salida) {
+                  //Carga de subáreas
+                  handleChangeText(false, "cargando");
+                  navigation.navigate("Home");
+                })
+            })
+        })
+        .catch(function (error) {
+          console.log("Error externo");
+          handleChangeText(false, "cargando");
+          handleChangeText("","accion");
+          if(error.response){
+            handleChangeText(error.response.status,"error");
+            console.log(error.response);
+          } else if (error.request) {
+            handleChangeText(404,"error");
+            console.log(error.request);
+          } else {
+            handleChangeText(1,"error");
+            console.log("Se desconoce el error");
+          }
+        });
+    };
+
+    const error = () => {
+      if(state.error === 422)
+      return (
+        <Text color={argonTheme.COLORS.ERROR}>Error en los datos</Text>
+      );
+      else if(state.error === 404)
+      return (
+        <Text color={argonTheme.COLORS.ERROR}>Error en la conexión</Text>
+      )
+      else if(state.error === 1){
+        return (
+          <Text color={argonTheme.COLORS.ERROR}>No se conce el error</Text>
+        )
+      }
+      else if(state.error === 2){
+        return (
+          <Text color={argonTheme.COLORS.PRIMARY}>{state.accion}</Text>
+        )
+      }
+      else return (
+        <Text></Text>
+      )
+    }
+
     return (
       <Block flex middle>
         <StatusBar hidden />
@@ -22,44 +106,15 @@ class Register extends React.Component {
           source={Images.RegisterBackground}
           style={{ width, height, zIndex: 1 }}
         >
-          <Block safe flex middle>
+          <Block flex middle>
             <Block style={styles.registerContainer}>
               <Block flex={0.25} middle style={styles.socialConnect}>
-                <Text color="#8898AA" size={12}>
-                  Sign up with
+                <Text color="#8898AA" size={16}>
+                  Iniciar Sesión
                 </Text>
-                <Block row style={{ marginTop: theme.SIZES.BASE }}>
-                  <Button style={{ ...styles.socialButtons, marginRight: 30 }}>
-                    <Block row>
-                      <Icon
-                        name="logo-github"
-                        family="Ionicon"
-                        size={14}
-                        color={"black"}
-                        style={{ marginTop: 2, marginRight: 5 }}
-                      />
-                      <Text style={styles.socialTextButtons}>GITHUB</Text>
-                    </Block>
-                  </Button>
-                  <Button style={styles.socialButtons}>
-                    <Block row>
-                      <Icon
-                        name="logo-google"
-                        family="Ionicon"
-                        size={14}
-                        color={"black"}
-                        style={{ marginTop: 2, marginRight: 5 }}
-                      />
-                      <Text style={styles.socialTextButtons}>GOOGLE</Text>
-                    </Block>
-                  </Button>
-                </Block>
               </Block>
               <Block flex>
-                <Block flex={0.17} middle>
-                  <Text color="#8898AA" size={12}>
-                    Or sign up the classic way
-                  </Text>
+                <Block flex={0.1} middle>
                 </Block>
                 <Block flex center>
                   <KeyboardAvoidingView
@@ -69,23 +124,9 @@ class Register extends React.Component {
                   >
                     <Block width={width * 0.8} style={{ marginBottom: 15 }}>
                       <Input
+                        onChangeText={(value) => handleChangeText(value, "email")}
                         borderless
-                        placeholder="Name"
-                        iconContent={
-                          <Icon
-                            size={16}
-                            color={argonTheme.COLORS.ICON}
-                            name="hat-3"
-                            family="ArgonExtra"
-                            style={styles.inputIcons}
-                          />
-                        }
-                      />
-                    </Block>
-                    <Block width={width * 0.8} style={{ marginBottom: 15 }}>
-                      <Input
-                        borderless
-                        placeholder="Email"
+                        placeholder="Correo"
                         iconContent={
                           <Icon
                             size={16}
@@ -99,9 +140,10 @@ class Register extends React.Component {
                     </Block>
                     <Block width={width * 0.8}>
                       <Input
+                        onChangeText={(value) => handleChangeText(value, "password")}
                         password
                         borderless
-                        placeholder="Password"
+                        placeholder="Contraseña"
                         iconContent={
                           <Icon
                             size={16}
@@ -112,25 +154,16 @@ class Register extends React.Component {
                           />
                         }
                       />
-                      <Block row style={styles.passwordCheck}>
-                        <Text size={12} color={argonTheme.COLORS.MUTED}>
-                          password strength:
-                        </Text>
-                        <Text bold size={12} color={argonTheme.COLORS.SUCCESS}>
-                          {" "}
-                          strong
-                        </Text>
-                      </Block>
                     </Block>
                     <Block row width={width * 0.75}>
-                      <Checkbox
+                      <Text
                         checkboxStyle={{
                           borderWidth: 3
                         }}
-                        color={argonTheme.COLORS.PRIMARY}
-                        label="I agree with the"
-                      />
+                        color={argonTheme.COLORS.BLACK}
+                      >Ir a </Text>
                       <Button
+                        disabled={state.cargando}
                         style={{ width: 100 }}
                         color="transparent"
                         textStyle={{
@@ -138,14 +171,22 @@ class Register extends React.Component {
                           fontSize: 14
                         }}
                       >
-                        Privacy Policy
+                        Comisión SH
                       </Button>
                     </Block>
+                    <Block middle>{error()}</Block>
                     <Block middle>
-                      <Button color="primary" style={styles.createButton}>
-                        <Text bold size={14} color={argonTheme.COLORS.WHITE}>
-                          CREATE ACCOUNT
-                        </Text>
+                      <Button
+                        disabled={state.cargando}
+                        color="primary"
+                        style={styles.createButton}
+                        onPress={()=>iniciar_sesion()}
+                      >
+                        {
+                          state.cargando?
+                          (<ActivityIndicator />):
+                          (<Text bold size={14} color={argonTheme.COLORS.WHITE}>INICIAR SESIÓN</Text>)
+                        }
                       </Button>
                     </Block>
                   </KeyboardAvoidingView>
@@ -156,13 +197,12 @@ class Register extends React.Component {
         </ImageBackground>
       </Block>
     );
-  }
 }
 
 const styles = StyleSheet.create({
   registerContainer: {
     width: width * 0.9,
-    height: height * 0.875,
+    height: height * 0.78,
     backgroundColor: "#F4F5F7",
     borderRadius: 4,
     shadowColor: argonTheme.COLORS.BLACK,
@@ -211,5 +251,4 @@ const styles = StyleSheet.create({
     marginTop: 25
   }
 });
-
 export default Register;

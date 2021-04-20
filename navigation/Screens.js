@@ -5,6 +5,8 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
+import Perfil from '../constants/Perfil';
+
 import { Block } from "galio-framework";
 
 // screens
@@ -15,12 +17,15 @@ import Profile from "../screens/Profile";
 import Register from "../screens/Register";
 import Elements from "../screens/Elements";
 import Articles from "../screens/Articles";
+import Camera from '../screens/Camera';
+import Review from '../screens/Review';
 // drawer
 import CustomDrawerContent from "./Menu";
 
 // header for screens
 import { Icon, Header } from "../components";
-import { argonTheme, tabs } from "../constants";
+//import { argonTheme, tabs } from "../constants";
+import Areas from '../constants/Areas';
 
 const { width } = Dimensions.get("screen");
 
@@ -137,6 +142,16 @@ function ProfileStack(props) {
   );
 }
 
+function CameraStack (props) {
+  return (
+    <Stack.Navigator mode="card" headerMode="screen">
+      <Stack.Screen
+        name="Camara"
+        component={Camera}/>
+    </Stack.Navigator>
+  );
+}
+
 function HomeStack(props) {
   return (
     <Stack.Navigator mode="card" headerMode="screen">
@@ -146,9 +161,9 @@ function HomeStack(props) {
         options={{
           header: ({ navigation, scene }) => (
             <Header
-              title="Home"
+              title="Inicio"
+              tabs={Areas.areas}
               search
-              options
               navigation={navigation}
               scene={scene}
             />
@@ -157,20 +172,53 @@ function HomeStack(props) {
         }}
       />
       <Stack.Screen
-        name="Pro"
-        component={Pro}
+        name="Cuestionario"
+        component={Review}
         options={{
-          header: ({ navigation, scene }) => (
+          header: ({ navigation }) => (
             <Header
-              title=""
               back
-              white
-              transparent
+              title="Cuestionario"
               navigation={navigation}
-              scene={scene}
             />
           ),
-          headerTransparent: true
+          cardStyle: { backgroundColor: "#F8F9FE" }
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function ReviewStack(props) {
+  return (
+    <Stack.Navigator mode="card" headerMode="screen">
+      <Stack.Screen
+        name="Cuestionario"
+        component={Review}
+        options={{
+          header: ({ navigation }) => (
+            <Header
+              back
+              title="Cuestionario"
+              navigation={navigation}
+              options={({ route }) => ({ title: route.params.name })}
+            />
+          ),
+          cardStyle: { backgroundColor: "#F8F9FE" }
+        }}
+      />
+      <Stack.Screen
+        name="Camara"
+        component={Camera}
+        options={{
+          header: ({ navigation }) => (
+            <Header
+              back
+              title="Camara"
+              navigation={navigation}
+            />
+          ),
+          cardStyle: { backgroundColor: "#F8F9FE" }
         }}
       />
     </Stack.Navigator>
@@ -221,14 +269,18 @@ function AppStack(props) {
           fontWeight: "normal"
         }
       }}
-      initialRouteName="Home"
+      initialRouteName={ventana(Perfil.llave)}
     >
       <Drawer.Screen name="Home" component={HomeStack} />
       <Drawer.Screen name="Profile" component={ProfileStack} />
       <Drawer.Screen name="Account" component={Register} />
       <Drawer.Screen name="Elements" component={ElementsStack} />
       <Drawer.Screen name="Articles" component={ArticlesStack} />
+      <Drawer.Screen name="Camara" component={CameraStack} />
+      <Drawer.Screen name="Cuestionario" component={ReviewStack} />
     </Drawer.Navigator>
   );
 }
-
+function ventana( key ) {
+  return (key === ""? "Account" : "Home");
+}

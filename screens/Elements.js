@@ -62,7 +62,7 @@ class Elements extends React.Component {
             </Button>
           </Block>
           <Block row space="evenly">
-            <Block flex left style={{marginTop: 8}}>
+            <Block flex left>
               <Select
                 defaultIndex={1}
                 options={["01", "02", "03", "04", "05"]}
@@ -359,19 +359,19 @@ class Elements extends React.Component {
         </Text>
         <Block>
           <Block style={{ marginBottom: theme.SIZES.BASE }}>
-            <Header back title="Title" navigation={this.props.navigation} />
+            <Header back title="Primero" navigation={this.props.navigation} />
           </Block>
 
           <Block style={{ marginBottom: theme.SIZES.BASE }}>
-            <Header white back title="Title" navigation={this.props.navigation} bgColor={argonTheme.COLORS.ACTIVE} titleColor="white" iconColor="white" />
+            <Header white back title="Segundo" navigation={this.props.navigation} bgColor={argonTheme.COLORS.ACTIVE} titleColor="white" iconColor="white" />
           </Block>
 
           <Block style={{ marginBottom: theme.SIZES.BASE }}>
-            <Header search title="Title" navigation={this.props.navigation} />
+            <Header search title="Tercero" navigation={this.props.navigation} />
           </Block>
 
           <Block style={{ marginBottom: theme.SIZES.BASE }}>
-            <Header tabs={tabs.categories} search title="Title" navigation={this.props.navigation} />
+            <Header tabs={tabs.categories} search title="Cuarto" navigation={this.props.navigation} />
           </Block>
 
           <Block style={{ marginBottom: theme.SIZES.BASE }}>
@@ -392,7 +392,7 @@ class Elements extends React.Component {
   render() {
     return (
       <Block flex center>
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 30, width }}>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 30 }}>
           {this.renderButtons()}
           {this.renderText()}
           {this.renderInputs()}
@@ -438,6 +438,9 @@ const styles = StyleSheet.create({
   },
   inputDefault: {
     borderBottomColor: argonTheme.COLORS.PLACEHOLDER
+  },
+  inputTheme: {
+    borderBottomColor: argonTheme.COLORS.PRIMARY
   },
   inputTheme: {
     borderBottomColor: argonTheme.COLORS.PRIMARY
