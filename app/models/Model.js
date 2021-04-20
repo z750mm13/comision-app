@@ -174,7 +174,6 @@ class Model {
     });
     return salida;
   }
-
   db() {
     return db;
   }
