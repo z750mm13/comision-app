@@ -11,6 +11,7 @@ import Target from '../models/Target';
 import Questionnaire from '../models/Questionnaire';
 import Question from '../models/Question';
 import Validity from '../models/Validity';
+import Review from '../models/Review';
 
 class ResourceController {
   static clearing = false;
@@ -117,7 +118,8 @@ class ResourceController {
                             .then(
                               (validity) => {
                                 Rango.limpiar();
-                                resolve(true);
+                                Review.clear().then((review)=>resolve(true))
+                                .catch(()=>reject)
                               }
                             ).catch(() => reject)
                         ).catch(()=>reject)

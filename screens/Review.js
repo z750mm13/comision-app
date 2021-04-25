@@ -1,7 +1,7 @@
-import React,{ useState } from "react";
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import React,{ useState,useEffect } from "react";
+import * as ImagePicker from 'expo-image-picker';
 // Icos
-import { ScrollView, StyleSheet, Dimensions } from "react-native";
+import { ScrollView, StyleSheet, Dimensions, Image, ActivityIndicator } from "react-native";
 // Galio components
 import { Block, Text, theme } from "galio-framework";
 // Argon themed components
@@ -9,10 +9,26 @@ import { argonTheme } from "../constants";
 import { Button, Input } from "../components";
 // Custom component
 import RadioButtonContainer from "../components/RadioButtonContainer";
+//Datos
+import ReviewController from '../app/controllers/ReviewController';
 
 const { width } = Dimensions.get("screen");
 
 function Review(props) {
+  //Permisos
+  useEffect(() => {
+    (async () => {
+      if (Platform.OS !== 'web') {
+        const { status } = await ImagePicker.requestCameraPermissionsAsync();
+        if (status !== 'granted') {
+          alert('Lo sentimos, se necesita permisos para acceder a la camara');
+          console.log('No hay permisos');
+        } else {
+          console.log('Permisos sedidos');
+        }
+      }
+    })();
+  }, []);
   //Opciones de ruta
   const { navigation,route } = props;
   //Propiedades
@@ -21,15 +37,17 @@ function Review(props) {
   let questions = route.params.array.questions;
   let validity = route.params.array.validity;
   //Ajuste de datos iniciales
-  const [pregunta, setPregunta] = useState({cuestionario:0,pregunta:0, contador: 1});
+  const [pregunta, setPregunta] = useState({cuestionario:0,pregunta:0, contador: 1, foto:null, estado:true, descripcion:''});
   const [respuestas, setRespuestas] = useState([]);
-  const [estado, setEstado] = useState(true);
-
+  const [espera,setEspera] = useState(false);
+  const [cargado, setCargado] = useState (false);
+  if(!cargado){
   questionnaires.forEach(questionnaire => {
     questionnaire.questions = [];
     questions.forEach(question => {
       if(question.questionnaire_id === questionnaire.id) {
         questionnaire.questions.push(question);
+        if(respuestas.length <= questions.length)
         respuestas.push({
           valor:true,
           descripcion:null,
@@ -41,8 +59,30 @@ function Review(props) {
       }
     });
   });
+  setCargado(true);
+  }
 
   // declaración de metodos
+  const tomarFoto = async () => {
+    if(!espera) {
+      setEspera(true);
+      let result = await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 0,
+        base64:true,
+      });
+
+      console.log('data:image/jpg;base64,'+result.base64);
+
+      if (!result.cancelled) {
+        setPregunta({...pregunta,foto:'data:image/jpg;base64,'+result.base64});
+        respuestas[pregunta.contador - 1].evidencia=pregunta.foto;
+      }
+      setEspera(false);
+    }
+  };
+
   renderButton = () => {
     return (
       <Block center>
@@ -50,22 +90,44 @@ function Review(props) {
           color="default"
           style={styles.button}
           onPress={()=>{
-            let cuestionario = questionnaires[pregunta.cuestionario];
-            if(cuestionario) {
-              if(pregunta.pregunta + 1 < cuestionario.questions.length) setPregunta({
-                ...pregunta,
-                contador: pregunta.contador + 1,
-                pregunta: pregunta.pregunta + 1
-              });
-              else setPregunta({
-                  contador    : pregunta.contador + 1,
-                  cuestionario: pregunta.cuestionario + 1,
-                  pregunta    : 0
+            if(pregunta.cuestionario<questionnaires.length) {
+              let cuestionario = questionnaires[pregunta.cuestionario];
+              if(cuestionario && !espera) {
+                if(pregunta.pregunta + 1 < cuestionario.questions.length) setPregunta({
+                  ...pregunta,
+                  contador: pregunta.contador + 1,
+                  pregunta: pregunta.pregunta + 1,
+                  foto: null,
+                  descripcion: ''
                 });
+                else setPregunta({
+                    contador    : pregunta.contador + 1,
+                    cuestionario: pregunta.cuestionario + 1,
+                    pregunta    : 0,
+                    foto: null,
+                    descripcion: ''
+                  });
+              }
+            } else if(!espera) { // Almacenamiento de las preguntas en la base de datos
+              setEspera(true);
+              console.log('Guardando datos');
+              ReviewController.clearData().then((res)=>
+                ReviewController.addMany(respuestas)
+                  .then((response)=>{
+                    setEspera(true);
+                    console.log(response);
+                    console.log(respuestas.length + ' respuestas agregadas correctamente.');
+                    navigation.goBack();
+                  }).catch(err=>{
+                    console.log(err);
+                    setEspera(false);
+                  })
+              ).catch(err=>console.log(err))
             }
+            console.log(respuestas.length);
           }}
         >
-          {questionnaires[pregunta.cuestionario]&&questionnaires[pregunta.cuestionario].questions[pregunta.pregunta]?'Siguiente':'Guardar'}
+          {espera? <Block center><ActivityIndicator/></Block>:questionnaires[pregunta.cuestionario]&&questionnaires[pregunta.cuestionario].questions[pregunta.pregunta]?'Siguiente':'Guardar'}
         </Button>
       </Block>
     );
@@ -133,23 +195,42 @@ function Review(props) {
   };
 
   let renderTextArea = () => {
-    if(!estado)
+    if(!pregunta.estado & pregunta.cuestionario<questionnaires.length)
       return <Block>
-        <Input right placeholder="Descripción" onChangeText={texto=>console.log(texto)} iconContent={<Block />} />
+        <Input
+          value={pregunta.descripcion}
+          placeholder="Descripción"
+          onChangeText={texto=>{
+            if(!espera){
+              pregunta.descripcion=texto;
+              respuestas[pregunta.contador - 1].descripcion=texto;
+            }
+          }}
+          iconContent={<Block />}
+          value={respuestas[pregunta.contador - 1].descripcion}
+        />
         <Button
         color="success"
         style={styles.button}
-        onPress={()=>navigation.navigate("Camara")}
+        onPress={tomarFoto}
         >
               Evidencia
         </Button>
+        {espera? <Block center><ActivityIndicator/></Block> : pregunta.foto && <Block center card shadow ><Image source={{ uri: pregunta.foto }} style={{ width: 200, height: 200 }} /></Block>}
       </Block>
     else return null;
   }
 
   const onRadioButtonPress = (itemIdx) => {
-    setEstado(itemIdx?false:true);
-    respuestas[pregunta.contador - 1].valor = (itemIdx?false:true);
+    let nuevo = itemIdx?false:true;
+    setPregunta({...pregunta,estado:nuevo});
+    respuestas[pregunta.contador - 1].valor = nuevo;
+    if(nuevo) {
+      setPregunta({...pregunta, foto:null, estado:true, descripcion:''});
+      respuestas[pregunta.contador - 1].evidencia=null;
+      respuestas[pregunta.contador - 1].descripcion=null;
+      console.log(respuestas[pregunta.contador - 1]);
+    };
   };
 
   //Renderización de pantalla
@@ -243,7 +324,12 @@ const styles = StyleSheet.create({
   area: {
     marginTop: 20,
     // paddingBottom: theme.SIZES.BASE * 2,
-  }
+  },
+  category: {
+    backgroundColor: theme.COLORS.WHITE,
+    marginVertical: theme.SIZES.BASE / 2,
+    borderWidth: 0
+  },
 });
 
 export default Review;

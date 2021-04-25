@@ -31,11 +31,13 @@ class Card extends React.Component {
               navigation.setParams({ process: "si" });
               loader.method.index(item.id)
                 .then(response=>{
-                  data.array = response;
                   navigation.setParams({ process: "no" });
+                  data.array = response;
                   navigation.navigate(loader.screen,data);
-                })
-                .catch(err => console.log(err));
+                }).catch(err => {
+                  navigation.setParams({ process: "no" });
+                  console.log(error);
+                });
             }
           }
         >
@@ -51,16 +53,19 @@ class Card extends React.Component {
             navigation.setParams({ process: "si" });
             loader.method.index(item.id)
               .then(response=>{
-                data.array = response;
                 navigation.setParams({ process: "no" });
+                data.array = response;
                 navigation.navigate(loader.screen,data);
-              })
-              .catch(err => console.log(error));
+              }).catch(err => {
+                navigation.setParams({ process: "no" });
+                console.log(error);
+              });
             }
           }
         >
           <Block flex space="between" style={styles.cardDescription}>
             <Text size={14} style={styles.cardTitle}>{item.title}</Text>
+            <Text size={14} style={styles.cardTitle}>Estado: Realizado sin subir</Text>
             <Text size={12} muted={!ctaColor} color={ctaColor || argonTheme.COLORS.ACTIVE} bold>{item.cta}</Text>
           </Block>
         </TouchableWithoutFeedback>

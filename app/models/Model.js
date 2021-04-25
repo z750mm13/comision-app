@@ -148,6 +148,7 @@ class Model {
       db.transaction((tx) => {//delete from 
         tx.executeSql('delete from ' + name + ' where id != -1;', [],
         () => {
+          console.log('Tabla '+name+' limpiada');
           resolve(true);
         },errorCB);
       });
