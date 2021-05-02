@@ -84,6 +84,19 @@ class Model {
      }], false, () => console.log(this.#name + " successful migrate."));
   }
 
+  updateData(id, column, value) {
+    return new Promise((resolve, reject) => {
+      db.transaction((tx) => {
+        tx.executeSql(
+          'UPDATE ' + this.#name + ' SET ' + column + '=' + value +
+          ' WHERE id=' + id + ';', [],
+        () => {
+          resolve(true);
+        },errorCB);
+      });
+    });
+  }
+
   setAutoincrement(autoincrement) {
     this.#autoincrement = autoincrement;
     return autoincrement;

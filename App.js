@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import { Image } from "react-native";
+import { Root } from 'popup-ui';
 import AppLoading from "expo-app-loading";
 import { useFonts } from '@use-expo/font';
 import { Asset } from "expo-asset";
@@ -67,13 +68,15 @@ export default props => {
     );
   } else if(fontsLoaded) {
     return (
-      <NavigationContainer>
-        <GalioProvider theme={argonTheme}>
-          <Block flex>
-            <Screens />
-          </Block>
-        </GalioProvider>
-      </NavigationContainer>
+      <Root>
+        <NavigationContainer>
+          <GalioProvider theme={argonTheme}>
+            <Block flex>
+              <Screens />
+            </Block>
+          </GalioProvider>
+        </NavigationContainer>
+      </Root>
     );
   } else {
     return null

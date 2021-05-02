@@ -29,6 +29,7 @@
     "expo-image-picker": "~9.2.0",
     "expo-sqlite": "^9.1.0",
     "galio-framework": "^0.7.1",
+    "popup-ui": "^1.2.2",
     "prop-types": "^15.7.2",
     "react": "16.13.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-40.0.1.tar.gz",

@@ -7,6 +7,7 @@ import {
   KeyboardAvoidingView,
   ActivityIndicator
 } from "react-native";
+import { Toast } from 'popup-ui';
 
 import { Block, Text } from "galio-framework";
 
@@ -21,6 +22,14 @@ const { width, height } = Dimensions.get("screen");
 
 function Register(props) {  
   const { navigation } = props;
+  const [toast,setToast] = useState(null);
+
+  renderToast = () => {
+    if(!toast) return null;
+    Toast.show(toast);
+    setToast(null);
+    return null;
+  };
 
     const initalState = {
       email: "",
@@ -39,8 +48,11 @@ function Register(props) {
       if(state.cargando || Perfil.llave !== "") return;
       console.log("Iniciando sesión");
       if(state.email === "" | state.password === ""){
-        console.log("Error interno");
-        handleChangeText(422,"error");
+        setToast({
+          title: 'Error',
+          text: 'Error en los datos.',
+          color: '#f5365c'
+        });
         return;
       }
       handleChangeText(true, "cargando");
@@ -55,6 +67,9 @@ function Register(props) {
                   //Carga de subáreas
                   handleChangeText(false, "cargando");
                   navigation.navigate("Home");
+                }).catch(err => {
+                  console.log(err);
+                  handleChangeText(false, "cargando")
                 })
             })
         })
@@ -63,41 +78,29 @@ function Register(props) {
           handleChangeText(false, "cargando");
           handleChangeText("","accion");
           if(error.response){
-            handleChangeText(error.response.status,"error");
+            setToast({
+              title: 'Error',
+              text: 'Error ' + error.response.status,
+              color: '#f5365c'
+            });
             console.log(error.response);
           } else if (error.request) {
-            handleChangeText(404,"error");
+            setToast({
+              title: 'Error',
+              text: 'Error en la conexión.',
+              color: '#f5365c'
+            });
             console.log(error.request);
           } else {
-            handleChangeText(1,"error");
+            setToast({
+              title: 'Error',
+              text: 'Error desconocido.',
+              color: '#f5365c'
+            });
             console.log("Se desconoce el error");
           }
         });
     };
-
-    const error = () => {
-      if(state.error === 422)
-      return (
-        <Text color={argonTheme.COLORS.ERROR}>Error en los datos</Text>
-      );
-      else if(state.error === 404)
-      return (
-        <Text color={argonTheme.COLORS.ERROR}>Error en la conexión</Text>
-      )
-      else if(state.error === 1){
-        return (
-          <Text color={argonTheme.COLORS.ERROR}>No se conce el error</Text>
-        )
-      }
-      else if(state.error === 2){
-        return (
-          <Text color={argonTheme.COLORS.PRIMARY}>{state.accion}</Text>
-        )
-      }
-      else return (
-        <Text></Text>
-      )
-    }
 
     return (
       <Block flex middle>
@@ -174,7 +177,6 @@ function Register(props) {
                         Comisión SH
                       </Button>
                     </Block>
-                    <Block middle>{error()}</Block>
                     <Block middle>
                       <Button
                         disabled={state.cargando}
@@ -188,6 +190,7 @@ function Register(props) {
                           (<Text bold size={14} color={argonTheme.COLORS.WHITE}>INICIAR SESIÓN</Text>)
                         }
                       </Button>
+                      {renderToast()}
                     </Block>
                   </KeyboardAvoidingView>
                 </Block>

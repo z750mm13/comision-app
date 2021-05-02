@@ -4,6 +4,7 @@ import { TouchableOpacity, StyleSheet, Platform, Dimensions, Alert } from 'react
 import { Button, Block, NavBar, Text, theme } from 'galio-framework';
 import UserController from '../app/controllers/UserController';
 import ResourceController from '../app/controllers/ResourceController';
+import ReviewController from '../app/controllers/ReviewController';
 
 import Icon from './Icon';
 import Input from './Input';
@@ -17,6 +18,13 @@ const confirma_cerrar_sesion = ( navigation ) => {
   Alert.alert('Cerrar Sesión', 'Si no ha guardado sus cambios estos se perderán. ¿Desea cerrar su sesión?',[
     {text:'Si', onPress: () => cerrar_sesion(navigation)},
     {text:'No', onPress: () => console.log('Sin cerrar sesión')}
+  ])
+}
+
+const confirma_subir_dados = ( navigation ) => {
+  Alert.alert('Subir datos', '¿Está seguro que desea subir sus datos?',[
+    {text:'Si', onPress: () => subirDatos(navigation)},
+    {text:'No', onPress: () => console.log('Sin subir datos')}
   ])
 }
 
@@ -35,6 +43,32 @@ function cerrar_sesion( navigation ) {
   })
 }
 
+function subirDatos( navigation ) {
+  navigation.setParams({ process: "si" });
+  console.log('Subiendo datos');
+  ReviewController.uploadData().then(resolve => {
+    console.log(resolve);
+    navigation.setParams({
+      process: "no",
+      toast:{
+        title: 'Carga completa',
+        text: resolve.message+(resolve.duplicados.length?' Pero han fallado '+resolve.duplicados.length+'. Consulta la plataforma para arreglarlo.':''),
+        color: (resolve.duplicados.length?'#fb6340':'#2ecc71')
+      }
+    });
+  }).catch(err => {
+    console.log(err);
+    navigation.setParams({
+      process: "no",
+      toast:{
+        title: 'Carga incompleta',
+        text: 'Ha fallado la conexión. Intentelo más tarde',
+        color: '#f5365c'
+      }
+    });
+  });
+}
+
 const EngineButton = ({isWhite, style, navigation}) => (
   <TouchableOpacity
     style={[styles.button, style]}
@@ -51,12 +85,14 @@ const EngineButton = ({isWhite, style, navigation}) => (
 );
 // <Block middle style={styles.notify} />
 
-const BasketButton = ({isWhite, style, navigation}) => (
-  <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('Pro')}>
+const BasketButton = ({isWhite, style, navigation}) => ( //cloudupload
+  <TouchableOpacity style={[styles.button, style]}
+    onPress={() => confirma_subir_dados(navigation)}
+  >
     <Icon
       family="ArgonExtra"
       size={16}
-      name="basket"
+      name="spaceship"
       color={argonTheme.COLORS[isWhite ? 'WHITE' : 'ICON']}
     />
   </TouchableOpacity>

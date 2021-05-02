@@ -11,6 +11,8 @@ import { Button, Input } from "../components";
 import RadioButtonContainer from "../components/RadioButtonContainer";
 //Datos
 import ReviewController from '../app/controllers/ReviewController';
+import Subarea from '../app/models/Subarea';
+import Subareas from '../app/vars/Subareas';
 
 const { width } = Dimensions.get("screen");
 
@@ -36,11 +38,13 @@ function Review(props) {
   let questionnaires = route.params.array.questionnaires;
   let questions = route.params.array.questions;
   let validity = route.params.array.validity;
+  let onBack = route.params.onBack;
   //Ajuste de datos iniciales
   const [pregunta, setPregunta] = useState({cuestionario:0,pregunta:0, contador: 1, foto:null, estado:true, descripcion:''});
   const [respuestas, setRespuestas] = useState([]);
   const [espera,setEspera] = useState(false);
   const [cargado, setCargado] = useState (false);
+
   if(!cargado){
   questionnaires.forEach(questionnaire => {
     questionnaire.questions = [];
@@ -77,7 +81,7 @@ function Review(props) {
 
       if (!result.cancelled) {
         setPregunta({...pregunta,foto:'data:image/jpg;base64,'+result.base64});
-        respuestas[pregunta.contador - 1].evidencia=pregunta.foto;
+        respuestas[pregunta.contador - 1].evidencia='data:image/jpg;base64,'+result.base64;
       }
       setEspera(false);
     }
@@ -114,10 +118,17 @@ function Review(props) {
               ReviewController.clearData().then((res)=>
                 ReviewController.addMany(respuestas)
                   .then((response)=>{
-                    setEspera(true);
                     console.log(response);
                     console.log(respuestas.length + ' respuestas agregadas correctamente.');
-                    navigation.goBack();
+                    Subarea.updateEstado(subarea.id, 1).then((valor) => {
+                      Subareas.subareas[subarea.area_id][subarea.index].estado = 1;
+                      console.log(Subareas.subareas[subarea.area_id][subarea.index]);
+                      console.log('Subarea actualizada.');
+                      setEspera(false);
+                      onBack();
+                      navigation.goBack();
+                    })
+                    .catch(error=>console.log(error));
                   }).catch(err=>{
                     console.log(err);
                     setEspera(false);

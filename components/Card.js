@@ -9,7 +9,7 @@ import { argonTheme } from '../constants';
 
 class Card extends React.Component {
   render() {
-    const { loader, navigation, item, horizontal, full, style, ctaColor, imageStyle } = this.props;
+    const { callback, item, horizontal, full, style, ctaColor, imageStyle } = this.props;
 
     const imageStyles = [
       full ? styles.fullImage : styles.horizontalImage,
@@ -23,50 +23,15 @@ class Card extends React.Component {
 
     return (
       <Block row={horizontal} card flex style={cardContainer}>
-        <TouchableWithoutFeedback
-          onPress={() => {
-            if(!loader) return;
-              data = {};
-              if(item.id)
-              navigation.setParams({ process: "si" });
-              loader.method.index(item.id)
-                .then(response=>{
-                  navigation.setParams({ process: "no" });
-                  data.array = response;
-                  navigation.navigate(loader.screen,data);
-                }).catch(err => {
-                  navigation.setParams({ process: "no" });
-                  console.log(error);
-                });
-            }
-          }
-        >
+        <TouchableWithoutFeedback onPress={() => callback()}>
           <Block flex style={imgContainer}>
             <Image source={{uri: item.image}} style={imageStyles} />
           </Block>
         </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback
-          onPress={() => {
-            if(!loader) return;
-            data = {};
-            if(item.id)
-            navigation.setParams({ process: "si" });
-            loader.method.index(item.id)
-              .then(response=>{
-                navigation.setParams({ process: "no" });
-                data.array = response;
-                navigation.navigate(loader.screen,data);
-              }).catch(err => {
-                navigation.setParams({ process: "no" });
-                console.log(error);
-              });
-            }
-          }
-        >
+        <TouchableWithoutFeedback onPress={() => callback()}>
           <Block flex space="between" style={styles.cardDescription}>
-            <Text size={14} style={styles.cardTitle}>{item.title}</Text>
-            <Text size={14} style={styles.cardTitle}>Estado: Realizado sin subir</Text>
-            <Text size={12} muted={!ctaColor} color={ctaColor || argonTheme.COLORS.ACTIVE} bold>{item.cta}</Text>
+            <Text size={14} style={styles.cardTitle}>{item.title+"\n"}Estado: {item.estado===0?'Sin realizar':item.estado===1?'Realizado sin subir':'Realizado y subido.'}</Text>
+            <Text size={12} muted={!ctaColor} color={ctaColor || argonTheme.COLORS.ACTIVE} bold>{item.estado===0?'Realizar evaluación':item.estado===1?'Subir evaluación':''}</Text>
           </Block>
         </TouchableWithoutFeedback>
       </Block>

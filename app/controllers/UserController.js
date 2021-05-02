@@ -23,7 +23,7 @@ class UserController {
               reject(error);
             });
         }).catch(function (error){
-          console.log("Api Error:");
+          console.log("USER Api Error:");
           reject.log(error);
         });
     });

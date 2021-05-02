@@ -18,86 +18,69 @@ class ResourceController {
   /**
    * Carga de datos de la api al storage local
    */
-  static load() {
-    return new Promise((resolve,reject) => {
-      ApiResourceController.load(Perfil.llave)
-        .then(function (response) {
-          //Carga en ram de datos
-          //Carga de datos en la base de datos
-          let data = response.data;
-          Area.addMany(data.areas)
-            .then((areasOk) => {
-              console.log("Areas cargadas: " + areasOk);
-              Subarea.addMany(data.subareas)
-                .then((subareasOk) => {
-                  console.log("Subareas cargadas: " + subareasOk);
-                  Target.addMany(data.targets)
-                    .then((targetOk) => {
-                      console.log("Targets cargados: " + targetOk);
-                      Questionnaire.addMany(data.questionnaires)
-                        .then((questionnaireOk) => {
-                          console.log("Questionnaires cargados: " + questionnaireOk);
-                          Question.addMany((data.questions))
-                            .then((questionOk) => {
-                              console.log("Questionns cargadas: " + questionOk);
-                              if(data.validity) {
-                                Validity.add(data.validity.id,data.validity.inicio,data.validity.fin)
-                                  .then((validityOk) => {
-                                    console.log("Validity cargada: " + validityOk);
-                                    Area.get().then((areas) => {
-                                      areas._array.forEach(area => {
-                                        Area.subareas(area.id).then((subareasSQL) => {
-                                          let data = [];
-                                          let area_id = "";
-                                          subareasSQL._array.forEach(subarea => {
-                                            data.push({
-                                              id:subarea.id,
-                                              title: subarea.nombre,
-                                              image: 'https://images.unsplash.com/photo-1516559828984-fb3b99548b21?ixlib=rb-1.2.1&auto=format&fit=crop&w=2100&q=80',
-                                              cta: 'Realizar evaluación'
-                                            });
-                                            area_id = subarea.area_id;
-                                          });
-                                          Subareas.subareas[area_id] = data;
-                                        });
-                                      });
-                                      console.log("Se han cargado las " + areas.length + " areas.");
-                                      resolve(true);
-                                    });
-                                });
-                                ResourceController.setRango(data.validity);
-                              } else {
-                                Area.get().then((areas) => {
-                                  areas._array.forEach(area => {
-                                    Area.subareas(area.id).then((subareasSQL) => {
-                                      let data = [];
-                                      let area_id = "";
-                                      subareasSQL._array.forEach(subarea => {
-                                        data.push({
-                                          id: subarea.id,
-                                          title: subarea.nombre,
-                                          image: 'https://images.unsplash.com/photo-1516559828984-fb3b99548b21?ixlib=rb-1.2.1&auto=format&fit=crop&w=2100&q=80',
-                                          cta: 'Realizar evaluación'
-                                        });
-                                        area_id = subarea.area_id;
-                                      });
-                                      Subareas.subareas[area_id] = data;
-                                    });
-                                  });
-                                  console.log("Resources cargados correctamente");
-                                  resolve(true);
-                                });
-                              }
-                          });
-                      });
-                  });
-              });
-          });
-        }).catch(function (error){
-          console.log("Api Error:");
-          reject(error);
+  static async load() {
+    // Carga de datos del servidor
+    let resources = await ApiResourceController.load(Perfil.llave);
+    if(!resources) throw CustomerError('No se pudo acceder a los recursos');
+    //Ajuste de datos
+    resources = resources.data;
+
+    //Carga de áreas
+    let areas = await Area.addMany(resources.areas);
+    if(!areas) throw CustomerError('No se guardaron las areas');
+    console.log("Areas cargadas: true");
+    areas = resources.areas;
+
+    //Carga de subáreas
+    let subareas = await Subarea.addMany(resources.subareas);
+    if (!subareas) throw CustomerError('No se guardaron las subareas');
+    console.log("Subareas cargadas: true");
+
+    for(const area of areas) {
+      subareas = await Area.subareas(area.id);
+      if(!subareas) throw CustomerError('No se cargaron las subareas');
+      // Carga de areas a la ram
+      let data = [];
+      let area_id = "";
+      for(const subarea of subareas._array) {
+        data.push({
+          id:subarea.id,
+          title: subarea.nombre,
+          estado: subarea.estado,
+          image: 'https://images.unsplash.com/photo-1607544835807-d79eefc44ee4?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
+          cta: 'Realizar evaluación',
+          area_id: subarea.area_id
         });
-    });
+        area_id = subarea.area_id;
+      }
+      Subareas.subareas[area_id] = data;
+    }
+    console.log("Se han cargado las " + areas.length + " areas.");
+
+    //Carga de targets
+    let targets = await Target.addMany(resources.targets);
+    if (!targets) throw CustomerError('No se guardaron los targets');
+    console.log("Targets cargados: true");
+    
+    //Carga de questionnaires
+    //console.log(resources.questionnaires);
+    let questionnaires = await Questionnaire.addMany(resources.questionnaires);
+    if (!questionnaires) throw CustomerError('No se guardaron los questionnaires');
+    console.log("Questionnaires cargados: true");
+
+    //Carga de questions
+    let questions = await Question.addMany(resources.questions);
+    if (!questions) throw CustomerError('No se guardaron los questions');
+    console.log("Questions cargados: true");
+
+    //Carga de validity
+    let validity = await Validity.add(resources.validity);
+    if (!validity) console.log('No se guardo el validity');
+    else {
+      if (resources.validity)
+      ResourceController.setRango(resources.validity);
+      console.log("Validity cargado: true");
+    }
   }
 
   static clearData() {
