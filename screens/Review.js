@@ -115,25 +115,23 @@ function Review(props) {
             } else if(!espera) { // Almacenamiento de las preguntas en la base de datos
               setEspera(true);
               console.log('Guardando datos');
-              ReviewController.clearData().then((res)=>
-                ReviewController.addMany(respuestas)
-                  .then((response)=>{
-                    console.log(response);
-                    console.log(respuestas.length + ' respuestas agregadas correctamente.');
-                    Subarea.updateEstado(subarea.id, 1).then((valor) => {
-                      Subareas.subareas[subarea.area_id][subarea.index].estado = 1;
-                      console.log(Subareas.subareas[subarea.area_id][subarea.index]);
-                      console.log('Subarea actualizada.');
-                      setEspera(false);
-                      onBack();
-                      navigation.goBack();
-                    })
-                    .catch(error=>console.log(error));
-                  }).catch(err=>{
-                    console.log(err);
+              ReviewController.addMany(respuestas)
+                .then((response)=>{
+                  console.log(response);
+                  console.log(respuestas.length + ' respuestas agregadas correctamente.');
+                  Subarea.updateEstado(subarea.id, 1).then((valor) => {
+                    Subareas.subareas[subarea.area_id][subarea.index].estado = 1;
+                    console.log(Subareas.subareas[subarea.area_id][subarea.index]);
+                    console.log('Subarea actualizada.');
                     setEspera(false);
+                    onBack();
+                    navigation.goBack();
                   })
-              ).catch(err=>console.log(err))
+                  .catch(error=>console.log(error));
+                }).catch(err=>{
+                  console.log(err);
+                  setEspera(false);
+                })
             }
             console.log(respuestas.length);
           }}
