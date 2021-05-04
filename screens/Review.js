@@ -77,8 +77,6 @@ function Review(props) {
         base64:true,
       });
 
-      console.log('data:image/jpg;base64,'+result.base64);
-
       if (!result.cancelled) {
         setPregunta({...pregunta,foto:'data:image/jpg;base64,'+result.base64});
         respuestas[pregunta.contador - 1].evidencia='data:image/jpg;base64,'+result.base64;
@@ -117,11 +115,9 @@ function Review(props) {
               console.log('Guardando datos');
               ReviewController.addMany(respuestas)
                 .then((response)=>{
-                  console.log(response);
                   console.log(respuestas.length + ' respuestas agregadas correctamente.');
                   Subarea.updateEstado(subarea.id, 1).then((valor) => {
                     Subareas.subareas[subarea.area_id][subarea.index].estado = 1;
-                    console.log(Subareas.subareas[subarea.area_id][subarea.index]);
                     console.log('Subarea actualizada.');
                     setEspera(false);
                     onBack();
@@ -133,7 +129,6 @@ function Review(props) {
                   setEspera(false);
                 })
             }
-            console.log(respuestas.length);
           }}
         >
           {espera? <Block center><ActivityIndicator/></Block>:questionnaires[pregunta.cuestionario]&&questionnaires[pregunta.cuestionario].questions[pregunta.pregunta]?'Siguiente':'Guardar'}
@@ -238,7 +233,6 @@ function Review(props) {
       setPregunta({...pregunta, foto:null, estado:true, descripcion:''});
       respuestas[pregunta.contador - 1].evidencia=null;
       respuestas[pregunta.contador - 1].descripcion=null;
-      console.log(respuestas[pregunta.contador - 1]);
     };
   };
 

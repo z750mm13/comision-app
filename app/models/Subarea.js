@@ -1,4 +1,5 @@
 import Model from './Model';
+import Review from './Review';
 
 class Subarea {
   static JSONuser = {
@@ -42,6 +43,15 @@ class Subarea {
     return Subarea.subarea.getWith({
       rows:"subarea.*",
       where: "subarea.id = " + id
+    });
+  }
+
+  static deleteReviews(subarea_id) {
+    return Review.review.deleteIn('id',{
+      sql:'select review.id from review '+
+      'inner join target on target.id = review.target_id '+
+      'inner join subarea on subarea.id = target.subarea_id '+
+      'where subarea.id = '+subarea_id
     });
   }
 

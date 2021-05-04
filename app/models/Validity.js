@@ -16,7 +16,7 @@ class Validity {
    * @param {id del cuestionario} descripcion
    */
   static add(id,inicio, fin){
-    let data = [id,inicio,fin]
+    let data = [id,inicio,fin];
     return Validity.validity.add(data);
   }
 

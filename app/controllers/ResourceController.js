@@ -74,10 +74,11 @@ class ResourceController {
     console.log("Questions cargados: true");
 
     //Carga de validity
-    let validity = await Validity.add(resources.validity);
+    let validity = null;
+    if (resources.validity)
+    validity = await Validity.add(resources.validity.id, resources.validity.inicio, resources.validity.fin);
     if (!validity) console.log('No se guardo el validity');
     else {
-      if (resources.validity)
       ResourceController.setRango(resources.validity);
       console.log("Validity cargado: true");
     }

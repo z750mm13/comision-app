@@ -5,6 +5,8 @@ import { Button, Block, NavBar, Text, theme } from 'galio-framework';
 import UserController from '../app/controllers/UserController';
 import ResourceController from '../app/controllers/ResourceController';
 import ReviewController from '../app/controllers/ReviewController';
+import Subarea from '../app/models/Subarea';
+import Subareas from '../app/vars/Subareas';
 
 import Icon from './Icon';
 import Input from './Input';
@@ -47,13 +49,20 @@ function subirDatos( navigation ) {
   navigation.setParams({ process: "si" });
   console.log('Subiendo datos');
   ReviewController.uploadData().then(resolve => {
-    console.log(resolve);
+    for(const subarea of resolve.agregadas) {
+      Subarea.updateEstado(subarea.id, 2).then((valor) => {
+        Subareas.find(subarea.id).estado = 2;
+        Subarea.deleteReviews(subarea.id).then(value =>console.log('Revisiones eliminadas: '+value))
+        .catch(error=>console.log(error));
+      })
+      .catch(error=>console.log(error));
+    }
     navigation.setParams({
       process: "no",
       toast:{
         title: 'Carga completa',
         text: resolve.message+(resolve.duplicados.length?' Pero han fallado '+resolve.duplicados.length+'. Consulta la plataforma para arreglarlo.':''),
-        color: (resolve.duplicados.length?'#fb6340':'#2ecc71')
+        color: (resolve.duplicados.length||resolve.code===404?'#fb6340':'#2ecc71')
       }
     });
   }).catch(err => {

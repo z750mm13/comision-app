@@ -92,7 +92,21 @@ class Model {
           ' WHERE id=' + id + ';', [],
         () => {
           resolve(true);
-        },errorCB);
+        },reject);
+      });
+    });
+  }
+
+  deleteIn( column, values ) {
+    return new Promise((resolve, reject) => {
+      console.log('DELETE FROM ' + this.#name + ' WHERE ' + column + ' IN (' + (typeof values === 'object'?values.sql:values)+');');
+      db.transaction((tx) => {
+        tx.executeSql(
+          'DELETE FROM ' + this.#name + ' WHERE ' + column + ' IN (' + (typeof values === 'object'?values.sql:values) +
+          ');', [],
+        () => {
+          resolve(true);
+        },reject);
       });
     });
   }
@@ -125,7 +139,7 @@ class Model {
         tx.executeSql('select * from ' + name + ';', [], (tx, results) => {
             //console.log(results.rows);
             resolve(results.rows);
-          },errorCB);
+          },reject);
       });
     });
   }
@@ -137,7 +151,7 @@ class Model {
         tx.executeSql('insert into ' + name + ' (' + (this.#autoincrement?'':'id,') + this.getColums() + ') values (' + (this.#autoincrement?'':'?,') + this.getValues() + ');', data,
         () => {
           resolve(true);
-        },errorCB);
+        },reject);
       });
     });
   }
@@ -150,7 +164,7 @@ class Model {
           this.values(data.length), data._array,
         () => {
           resolve(true);
-        },errorCB);
+        },reject);
       });
     });
   }
@@ -163,7 +177,7 @@ class Model {
         () => {
           console.log('Tabla '+name+' limpiada');
           resolve(true);
-        },errorCB);
+        },reject);
       });
     })
   }
@@ -176,7 +190,7 @@ class Model {
           this.joins(structure.joins) +
           (structure.where?'where '+structure.where:''), [],
           (tx, results) => resolve(results.rows)
-        ,errorCB);
+        ,reject);
       });
     });
   }

@@ -7,6 +7,8 @@ import { Block, theme } from 'galio-framework';
 import { Card } from '../components';
 import ProgressDialog from 'react-native-progress-dialog';
 
+//Eliminar review
+import Review from '../app/models/Review';
 import Subareas from '../app/vars/Subareas';
 import QuestionnaireController from '../app/controllers/QuestionnaireController';
 
@@ -57,6 +59,8 @@ function Home (props) {
         i++;
         let callback = () => {
           let data = {};
+          Review.get().then(data=>console.log(data._array))
+          .catch(error=>console.log());
           if(prop.estado!==0) {
             navigation.setParams({
               toast:{
