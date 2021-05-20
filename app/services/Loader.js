@@ -43,6 +43,7 @@ class Loader {
                         id: subarea.id,
                         title: subarea.nombre,
                         estado: subarea.estado,
+                        cuestionarios: subarea.cuestionarios,
                         image: 'https://images.unsplash.com/photo-1607544835807-d79eefc44ee4?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
                         cta: 'Realizar evaluación',
                         area_id: subarea.area_id

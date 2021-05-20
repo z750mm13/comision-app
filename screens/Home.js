@@ -67,6 +67,16 @@ function Home (props) {
             });
             return;
           }
+          if(prop.cuestionarios==0) {
+            navigation.setParams({
+              toast:{
+                title: 'Subárea sin preguntas',
+                text: 'Si quiere consultar la información revise la plataforma.',
+                color: '#fb6340'
+              }
+            });
+            return;
+          }
           if(prop.id)
           navigation.setParams({ process: "si" });
           QuestionnaireController.index(prop.id)

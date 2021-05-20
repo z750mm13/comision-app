@@ -21,24 +21,29 @@ class ResourceController {
   static async load() {
     // Carga de datos del servidor
     let resources = await ApiResourceController.load(Perfil.llave);
-    if(!resources) throw CustomerError('No se pudo acceder a los recursos');
+    if(!resources) console.log('No se pudo acceder a los recursos');
     //Ajuste de datos
     resources = resources.data;
+    console.log(resources);
 
     //Carga de áreas
-    let areas = await Area.addMany(resources.areas);
-    if(!areas) throw CustomerError('No se guardaron las areas');
+    let areas = null;
+    if(resources.areas.length !== 0)
+    areas = await Area.addMany(resources.areas);
+    if(!areas) console.log('No se guardaron las areas');
     console.log("Areas cargadas: true");
     areas = resources.areas;
 
     //Carga de subáreas
-    let subareas = await Subarea.addMany(resources.subareas);
-    if (!subareas) throw CustomerError('No se guardaron las subareas');
+    let subareas = null;
+    if(resources.subareas.length !== 0)
+    subareas = await Subarea.addMany(resources.subareas);
+    if (!subareas) console.log('No se guardaron las subareas');
     console.log("Subareas cargadas: true");
 
     for(const area of areas) {
       subareas = await Area.subareas(area.id);
-      if(!subareas) throw CustomerError('No se cargaron las subareas');
+      if(!subareas) console.log('No se cargaron las subareas');
       // Carga de areas a la ram
       let data = [];
       let area_id = "";
@@ -47,6 +52,7 @@ class ResourceController {
           id:subarea.id,
           title: subarea.nombre,
           estado: subarea.estado,
+          cuestionarios: subarea.cuestionarios,
           image: 'https://images.unsplash.com/photo-1607544835807-d79eefc44ee4?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
           cta: 'Realizar evaluación',
           area_id: subarea.area_id
@@ -58,19 +64,24 @@ class ResourceController {
     console.log("Se han cargado las " + areas.length + " areas.");
 
     //Carga de targets
-    let targets = await Target.addMany(resources.targets);
-    if (!targets) throw CustomerError('No se guardaron los targets');
+    let targets = null;
+    if(resources.targets.length !== 0)
+    targets = await Target.addMany(resources.targets);
+    if (!targets) console.log('No se guardaron los targets');
     console.log("Targets cargados: true");
     
     //Carga de questionnaires
-    //console.log(resources.questionnaires);
-    let questionnaires = await Questionnaire.addMany(resources.questionnaires);
-    if (!questionnaires) throw CustomerError('No se guardaron los questionnaires');
+    let questionnaires = null;
+    if(resources.questionnaires.length !== 0)
+    questionnaires = await Questionnaire.addMany(resources.questionnaires);
+    if (!questionnaires) console.log('No se guardaron los questionnaires');
     console.log("Questionnaires cargados: true");
 
     //Carga de questions
-    let questions = await Question.addMany(resources.questions);
-    if (!questions) throw CustomerError('No se guardaron los questions');
+    let questions = null;
+    if(resources.questions.length !== 0)
+    questions = await Question.addMany(resources.questions);
+    if (!questions) console.log('No se guardaron los questions');
     console.log("Questions cargados: true");
 
     //Carga de validity

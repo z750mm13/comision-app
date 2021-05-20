@@ -30,8 +30,8 @@ class Card extends React.Component {
         </TouchableWithoutFeedback>
         <TouchableWithoutFeedback onPress={() => callback()}>
           <Block flex space="between" style={styles.cardDescription}>
-            <Text size={14} style={styles.cardTitle}>{item.title+"\n"}Estado: {item.estado===0?'Sin realizar':item.estado===1?'Realizado sin subir':'Realizado y subido.'}</Text>
-            <Text size={12} muted={!ctaColor} color={ctaColor || argonTheme.COLORS.ACTIVE} bold>{item.estado===0?'Realizar evaluación':item.estado===1?'Subir evaluación':''}</Text>
+            <Text size={14} style={styles.cardTitle}>{item.title+"\n"}Estado: {item.cuestionarios===0?'Sin preguntas':item.estado===0?'Sin realizar':item.estado===1?'Realizado sin subir':'Realizado y subido.'}</Text>
+            <Text size={12} muted={!ctaColor} color={ctaColor || argonTheme.COLORS.ACTIVE} bold>{item.cuestionarios===0?'':item.estado===0?'Realizar evaluación':item.estado===1?'Subir evaluación':''}</Text>
           </Block>
         </TouchableWithoutFeedback>
       </Block>

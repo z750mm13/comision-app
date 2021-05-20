@@ -82,7 +82,7 @@ class Model {
       sql: 'create table if not exists ' + this.#name + ' (id integer primary key' + (this.#autoincrement?' autoincrement':'') + this.makeColums() + ');',
       args: []
      }], false, () => console.log(this.#name + " successful migrate."));
-  }
+  }//PRAGMA . default_cache_size;
 
   updateData(id, column, value) {
     return new Promise((resolve, reject) => {
@@ -99,7 +99,6 @@ class Model {
 
   deleteIn( column, values ) {
     return new Promise((resolve, reject) => {
-      console.log('DELETE FROM ' + this.#name + ' WHERE ' + column + ' IN (' + (typeof values === 'object'?values.sql:values)+');');
       db.transaction((tx) => {
         tx.executeSql(
           'DELETE FROM ' + this.#name + ' WHERE ' + column + ' IN (' + (typeof values === 'object'?values.sql:values) +
@@ -136,12 +135,36 @@ class Model {
     return new Promise((resolve, reject) => {
       let name = this.#name;
       db.transaction((tx) => {
+        console.log('select * from ' + name + ';');
         tx.executeSql('select * from ' + name + ';', [], (tx, results) => {
             //console.log(results.rows);
             resolve(results.rows);
           },reject);
       });
     });
+  }
+
+  tableInfo() {//pragma table_info(people)
+    return new Promise((resolve, reject) => {
+      let name = this.#name;
+      db.transaction((tx) => {
+        tx.executeSql('pragma table_info(' + name + ');', [], (tx, results) => {
+            resolve(results.rows);
+          },reject);
+      });
+    });
+  }
+
+  addColumn( column ) {
+    return new Promise((resolve, reject) => {
+      let name = this.#name;
+      db.transaction((tx) => {
+        tx.executeSql('ALTER TABLE ' + name + ' ADD ' + column + ';', [],
+        () => {
+          resolve(true);
+        },reject);
+      });
+    })
   }
 
   add(data) {
@@ -202,6 +225,7 @@ class Model {
     });
     return salida;
   }
+  
   db() {
     return db;
   }

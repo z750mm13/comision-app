@@ -1,5 +1,6 @@
 import React,{ useState,useEffect } from "react";
 import * as ImagePicker from 'expo-image-picker';
+import * as ImageManipulator from 'expo-image-manipulator';
 // Icos
 import { ScrollView, StyleSheet, Dimensions, Image, ActivityIndicator } from "react-native";
 // Galio components
@@ -73,13 +74,18 @@ function Review(props) {
       let result = await ImagePicker.launchCameraAsync({
         allowsEditing: true,
         aspect: [4, 3],
-        quality: 0,
-        base64:true,
+        quality: 0.5
       });
 
       if (!result.cancelled) {
-        setPregunta({...pregunta,foto:'data:image/jpg;base64,'+result.base64});
-        respuestas[pregunta.contador - 1].evidencia='data:image/jpg;base64,'+result.base64;
+        console.log(result.uri);
+        let img = await ImageManipulator.manipulateAsync(result.uri,
+          [{resize:{ width: 768}}],
+          {compress:0.8,format:'jpeg'}
+        );
+        console.log(img);
+        setPregunta({...pregunta,foto:img.uri});
+        respuestas[pregunta.contador - 1].evidencia=img.uri;
       }
       setEspera(false);
     }

@@ -42,7 +42,7 @@ function cerrar_sesion( navigation ) {
   .catch(function (error){
     navigation.setParams({ process: "no" })
     console.log('Cierre de sesion -> ' + error);
-  })
+  });
 }
 
 function subirDatos( navigation ) {
@@ -71,7 +71,7 @@ function subirDatos( navigation ) {
       process: "no",
       toast:{
         title: 'Carga incompleta',
-        text: 'Ha fallado la conexión. Intentelo más tarde',
+        text: 'Ha fallado la conexión. Intentelo más tarde.',
         color: '#f5365c'
       }
     });

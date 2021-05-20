@@ -70,6 +70,15 @@ function Register(props) {
                 }).catch(err => {
                   console.log(err);
                   handleChangeText(false, "cargando")
+                  UserController.clearData().then(function(response){
+                    ResourceController.clearData().then(()=>{
+                      console.log("Cesion cerrada exitosamente!");
+                    })
+                  })
+                  .catch(function (error){
+                    navigation.setParams({ process: "no" })
+                    console.log('Cierre de sesion -> ' + error);
+                  });
                 })
             })
         })

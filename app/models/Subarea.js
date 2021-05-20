@@ -5,7 +5,8 @@ class Subarea {
   static JSONuser = {
     nombre: "varchar(150)",
     area_id: "integer",
-    estado: "integer"
+    estado: "integer",
+    cuestionarios: "integer"
   };
 
   static subarea = new Model(this.JSONuser, "subarea");
@@ -18,8 +19,8 @@ class Subarea {
    * @param {nombre de la subárea} nombre
    * @param {id del área asiciada} area_id
    */
-  static add(id,nombre, area_id){
-    let data = [id,nombre,area_id, 0]
+  static add(id,nombre, area_id, cuestionarios){
+    let data = [id,nombre,area_id, 0, cuestionarios]
     return Subarea.subarea.add(data);
   }
 
@@ -31,6 +32,7 @@ class Subarea {
       _array.push(subarea.nombre);
       _array.push(subarea.area_id);
       _array.push(subarea.estado);
+      _array.push(subarea.cuestionarios);
     });
     return Subarea.subarea.addMany({length:length,_array:_array});
   }
@@ -69,6 +71,10 @@ class Subarea {
 
   static clear() {
     return Subarea.subarea.clear();
+  }
+
+  static info() {
+    return Subarea.subarea.tableInfo();
   }
 }
 
